@@ -1,0 +1,22 @@
+referencias_visualizacion:
+  - nombre: "EIA Grid Monitor Dashboard"
+    url: "https://www.eia.gov/electricity/gridmonitor/dashboard/electric_overview/US48/US48"
+  
+  - nombre: "EIA Electricity Data Browser"
+    url: "https://www.eia.gov/electricity/data/browser/"
+  
+  - nombre: "EIA Today in Energy"
+    url: "https://www.eia.gov/todayinenergy/"
+  
+  - nombre: "GridStatus.io - CAISO Live"
+    url: "https://www.gridstatus.io/live/caiso"
+  
+  - nombre: "Electricity Maps - Live Map"
+    url: "https://app.electricitymaps.com/map/live/fifteen_minutes"
+  
+  - nombre: "ERCOT Grid Market Info Dashboards"
+    url: "https://www.ercot.com/gridmktinfo/dashboards"
+
+repositorios_utiles:
+  - nombre: "EIA Stuff Collection"
+    url: "https://github.com/stars/MelodiousZero/lists/eia-stuff"
