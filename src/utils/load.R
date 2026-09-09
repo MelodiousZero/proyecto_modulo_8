@@ -164,7 +164,27 @@ respuesta <- GET(
 datos <- fromJSON(content(respuesta, "text"))$response$data
 write.csv(datos, "src/data/state_generator_capacity.csv", row.names = FALSE)
 
+#Electricity Sales to Ultimate Customoers - Quarterly
 
+respuesta <- GET(
+  "https://api.eia.gov/v2/electricity/retail-sales/data/",
+  query = list(
+    api_key = api_key,
+    frequency = "quarterly",
+    `data[0]` = "customers",
+    `data[1]` = "price",
+    `data[2]` = "revenue",
+    `data[3]` = "sales",
+    `sort[0][column]` = "period",
+    `sort[0][direction]` = "desc",
+     offset = 0,
+     length = 5000
+
+  )
+)
+
+datos <- fromJSON(content(respuesta, "text"))$response$data
+write.csv(datos, "src/data/sales_to_customers.csv", row.names = FALSE)
 
 
 
