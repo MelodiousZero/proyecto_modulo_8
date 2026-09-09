@@ -37,22 +37,21 @@ fetch_and_save_eia_data <- function(path_index, csv_filename) {
   return(df)
 }
 
-# Usage
 df1 <- fetch_and_save_eia_data(
   path_index = 1,
-  csv_filename = "daily_hourly_all.csv"
+  csv_filename = "src/data/daily_hourly_all.csv"
 )
 
 
 
 df3 <- fetch_and_save_eia_data(
   path_index = 3,
-  csv_filename = "hourly_generation_by_energy_source.csv"
+  csv_filename = "src/data/hourly_generation_by_energy_source.csv"
 )
 
 df4 <- fetch_and_save_eia_data(
   path_index = 4,
-  csv_filename = "hourly_interchange.csv"
+  csv_filename = "src/data/hourly_interchange.csv"
 )
 
 # solo los de arriba funcionaron con la paqueteria de eapi
@@ -78,7 +77,7 @@ parsed <- fromJSON(content(response, "text"))
 df <- parsed$response$data
 
 
-write.csv(df, "hourly_demand_subregion.csv", row.names = FALSE)
+write.csv(df, "src/data/hourly_demand_subregion.csv", row.names = FALSE)
 
 
 #State Supply Electricity
@@ -116,7 +115,7 @@ respuesta <- GET(
 )
 
 datos <- fromJSON(content(respuesta, "text"))$response$data
-write.csv(datos, "source_disposition_data.csv", row.names = FALSE)
+write.csv(datos, "src/data/source_disposition_data.csv", row.names = FALSE)
 
 
 #Operable Generators
@@ -145,7 +144,7 @@ respuesta <- GET(
 )
 
 datos <- fromJSON(content(respuesta, "text"))$response$data
-write.csv(datos, "operating_generators_capacity.csv", row.names = FALSE)
+write.csv(datos, "src/data/operating_generators_capacity.csv", row.names = FALSE)
 
 
 #State gnerating capacity
@@ -163,7 +162,7 @@ respuesta <- GET(
 )
 
 datos <- fromJSON(content(respuesta, "text"))$response$data
-write.csv(datos, "state_generator_capacity.csv", row.names = FALSE)
+write.csv(datos, "src/data/state_generator_capacity.csv", row.names = FALSE)
 
 
 
