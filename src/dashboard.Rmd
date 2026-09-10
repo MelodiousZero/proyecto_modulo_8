@@ -16,12 +16,14 @@ library(plotly)
 library(DT)
 source("modules/value_box_module_demand_total.R")
 source("modules/usmap.R")
+source("modules/fuel_mix.R")
 data <- read.csv("data/hourly_demand_subregion.csv", stringsAsFactors = FALSE)
+data_generation_by_energy_source <- read.csv("data/hourly_generation_by_energy_source.csv", stringsAsFactors = FALSE)
 
 
 ```
 
-Ejemplo
+Demanda de Electricidad en Estados Unidos
 ===============================
 
 
@@ -41,8 +43,17 @@ create_value_box(summary)
 HOLA
 
 ```{r}
+make_fuel_mix(data_generation_by_energy_source)
+```
+
+### Chart C
+
+HOLA x2
+
+```{r}
 
 ```
+
 
 Column {data-width=700}
 -------------------------------------------------------------
