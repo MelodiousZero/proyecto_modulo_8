@@ -63,10 +63,11 @@ response <- GET(
     api_key = api_key,
     frequency = "hourly",
     `data[0]` = "value",
+    start = "2019-01-01T00",
     `sort[0][column]` = "period",
     `sort[0][direction]` = "desc",
     offset = 0,
-    length = 5000
+    length = 10000
   )
 )
 

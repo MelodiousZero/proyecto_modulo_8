@@ -1,0 +1,99 @@
+---
+title: "Proyecto final modulo 8."
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(dplyr)
+library(lubridate)
+library(shiny)
+library(plotly)
+library(DT)
+source("modules/value_box_module_demand_total.R")
+source("modules/usmap.R")
+data <- read.csv("data/hourly_demand_subregion.csv", stringsAsFactors = FALSE)
+
+
+```
+
+Ejemplo
+===============================
+
+
+Column {data-width=300}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+summary = get_mwh_summary(data)
+create_value_box(summary)
+
+```
+
+### Chart C
+
+HOLA
+
+```{r}
+
+```
+
+Column {data-width=700}
+-------------------------------------------------------------
+
+### Chart A
+
+
+
+```{r}
+make_us_map(data)
+
+```
+
+
+Ejemplo2 {data-orientation=rows}
+===============================
+
+Row {data-height=700}
+-----------------------------------------------------------------------
+
+### Chart d
+
+```{r}
+
+```
+### Chart f
+
+```{r}
+
+```
+
+### Chart g
+
+```{r}
+
+```
+
+Row {data-height=300}
+-----------------------------------------------------------------------
+
+### Chart e
+
+```{r}
+
+```
+
+Row {data-height=300}
+-----------------------------------------------------------------------
+
+### Chart k
+
+```{r}
+
+```
