@@ -23,12 +23,16 @@ make_fuel_mix <- function(data){
     "Waste"            = "#7F8C8D"
   )
   
+  data <- data %>%
+    rename_with(~ gsub("[.-]", "_", .x))
+  
   df <- data %>%
     mutate(
       datetime = ymd_h(period),  # Parse "2026-09-10T07" correctly
       value = as.numeric(value)
     )
   
+
   # Get the most recent day's data
   latest_day <- max(ymd_h(df$period))
   day_data <- df %>%
