@@ -1,0 +1,108 @@
+name: Update Data & Deploy Dashboard
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      force_refresh:
+        description: 'Forzar descarga completa'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+
+    env:
+      eia_key: ${{ secrets.EIA_KEY }}
+      FORCE_REFRESH: ${{ inputs.force_refresh }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::EIAapi
+            any::dotenv
+            any::httr
+            any::jsonlite
+            any::here
+          cache-version: 1
+
+      - name: Fetch data from EIA
+        run: Rscript src/utils/load.R
+
+      - name: Commit and push CSVs
+        id: commit_data
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add -A src/data/
+
+          if git diff --cached --quiet; then
+            echo "Sin cambios en los CSVs"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "Auto-update EIA data ($(date -u +'%Y-%m-%d'))"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+    outputs:
+      data_changed: ${{ steps.commit_data.outputs.changed }}
+
+  render:
+    needs: fetch
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::rmarkdown
+            any::flexdashboard
+            any::dplyr
+            any::lubridate
+            any::plotly
+            any::DT
+            any::tidyr
+            any::usmap
+            any::ggplot2
+            any::here
+          cache-version: 1
+
+      - name: Render dashboard
+        run: |
+          Rscript -e 'rmarkdown::render("src/dashboard.Rmd", output_file = "index.html", output_dir = "docs")'
+
+      - name: Commit and push HTML
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add -A docs/
+
+          if git diff --cached --quiet; then
+            echo "Sin cambios en el HTML"
+          else
+            git commit -m "Auto-render dashboard ($(date -u +'%Y-%m-%d'))"
+            git push
+          fi
