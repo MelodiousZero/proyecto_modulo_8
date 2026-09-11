@@ -48,9 +48,12 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Añade las rutas donde tu load.R guarda los CSV.
-          # El '2>/dev/null || true' evita que falle si alguna ruta no existe.
-          git add src/data/*.csv data/*.csv 2>/dev/null || true
+          # git add -A: agrega archivos nuevos, modificados y borrados.
+          # Sin globs (que el shell expande) y sin ocultar errores.
+          git add -A src/data/ data/ 2>&1 || true
+
+          echo "=== Staged files ==="
+          git diff --cached --name-only
 
           if git diff --cached --quiet; then
             echo "Sin cambios en los CSVs"
