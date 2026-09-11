@@ -17,15 +17,15 @@ create_value_box <- function(summary) {
   if (direction == "up") {
     color <- "danger"
     icon <- "fa-arrow-up"
-    change_text <- paste0("+", pct_change, "% demand from prior hour")
+    change_text <- paste0("+", pct_change, "% demanda respecto a hora anterior")
   } else if (direction == "down") {
     color <- "success"
     icon <- "fa-arrow-down"
-    change_text <- paste0(pct_change, "% demand from prior hour")
+    change_text <- paste0(pct_change, "% demanda respecto a hora anterior")
   } else {
     color <- "info"
     icon <- "fa-minus"
-    change_text <- "No change from prior hour"
+    change_text <- "No hay cambios con respecto a la hora anterior."
   }
   
   # Create the value box with dynamic values

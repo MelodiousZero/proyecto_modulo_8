@@ -7,6 +7,10 @@ output:
 runtime: shiny
 ---
 
+
+
+
+
 ```{r setup, include=FALSE}
 library(flexdashboard)
 library(dplyr)
@@ -24,7 +28,7 @@ state_generation_capacity <- read.csv("data/state_generator_capacity.csv",string
 
 ```
 
-Demanda de Electricidad en Estados Unidos
+Demanda por hora
 ===============================
 
 
@@ -67,6 +71,10 @@ make_us_map(data)
 
 ```
 
+
+### Forecast
+
+foreman
 
 Ejemplo2 {data-orientation=rows}
 ===============================

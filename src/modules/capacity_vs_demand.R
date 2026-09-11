@@ -1,71 +1,23 @@
 library(dplyr)
-library(lubridate)
 library(tidyr)
 library(ggplot2)
-library(shiny)
 
 
-capacity_vs_demand <- function(state_generation_capacity, state_demand_df) {
+capacity_vs_demand <- function(state_generation_capacity,
+                               state_demand_df,
+                               max_pct = 150) {
   
-  # ---- Precompute once (outside the reactive) ----
+  # ---- Precompute once ----
   state_capacity <- state_generation_capacity %>%
     filter(
       energysourceid == "ALL",
       producertypeid == "TOT",
-      period == max(period, na.rm = TRUE)      # keep only the latest year
+      period == max(period, na.rm = TRUE)
     )
   
   state_demand <- make_state_demand_wide(state_demand_df)
   
-  # ---- Build the state list from the data ----
-  states_avail <- sort(unique(c(
-    as.character(state_demand$state_id),
-    as.character(state_capacity$stateId)
-  )))
-  states_avail <- states_avail[!is.na(states_avail) & nzchar(states_avail)]
-  
-  default_state <- if ("CA" %in% states_avail) "CA" else states_avail[1]
-  
-  # ---- UI ----
-  ui <- fluidPage(
-    titlePanel("Capacity vs Demand Speedometer"),
-    sidebarLayout(
-      sidebarPanel(
-        selectInput(
-          "state", "Select state:",
-          choices  = states_avail,
-          selected = default_state
-        ),
-        helpText("Demand is the last available hour. Capacity is the latest year.")
-      ),
-      mainPanel(
-        plotOutput("speedo", height = "520px")
-      )
-    )
-  )
-  
-  # ---- Server ----
-  server <- function(input, output, session) {
-    output$speedo <- renderPlot({
-      req(input$state)
-      speedometer(state_capacity, state_demand, state = input$state)
-    })
-  }
-  
-  # Returning the app object means simply calling this function
-  # (without assigning it) will launch the app in an interactive session.
-  shinyApp(ui, server)
-}
-
-
-
-
-library(ggplot2)
-library(dplyr)
-
-speedometer <- function(state_capacity, state_demand, state, max_pct = 150) {
-  
-  # --- Last hour of demand ---
+  # ---- Calcular pct para TODOS los estados (para encontrar el máximo) ----
   last_hour <- max(state_demand$hour, na.rm = TRUE)
   
   demand_last <- state_demand %>%
@@ -75,38 +27,80 @@ speedometer <- function(state_capacity, state_demand, state, max_pct = 150) {
   capacity_all <- state_capacity %>%
     mutate(stateId = as.character(stateId))
   
-  # --- Totals for the chosen state ---
-  s_dem <- sum(demand_last$demand[demand_last$state_id == state], na.rm = TRUE)
-  s_cap <- sum(capacity_all$capability[capacity_all$stateId == state], na.rm = TRUE)
+  # Demanda y capacidad por estado
+  demand_by_state <- demand_last %>%
+    group_by(state_id) %>%
+    summarise(demand = sum(demand, na.rm = TRUE), .groups = "drop")
   
-  if (s_cap == 0 && s_dem == 0) {
-    warning(sprintf("No data found for state '%s'. Check the state_id / stateId values.", state))
-  }
+  capacity_by_state <- capacity_all %>%
+    group_by(stateId) %>%
+    summarise(capacity = sum(capability, na.rm = TRUE), .groups = "drop") %>%
+    rename(state_id = stateId)
   
-  # --- Totals for US (all states combined) ---
+  pct_by_state <- full_join(demand_by_state, capacity_by_state,
+                            by = "state_id") %>%
+    mutate(
+      demand   = replace_na(demand, 0),
+      capacity = ifelse(is.na(capacity) | capacity == 0, NA_real_, capacity),
+      pct      = (demand / capacity) * 100
+    ) %>%
+    filter(!is.na(pct), !is.na(state_id), nzchar(state_id))
+  
+  # El estado con el porcentaje más alto
+  top_state <- pct_by_state %>%
+    arrange(desc(pct)) %>%
+    slice(1) %>%
+    pull(state_id)
+  
+  if (length(top_state) == 0) top_state <- "US"  # fallback
+  
+  # ---- Facets: top_state primero, luego US ----
+  speedometer_grid(state_capacity, state_demand,
+                   states  = c(top_state, "US"),
+                   max_pct = max_pct)
+}
+
+
+speedometer_grid <- function(state_capacity, state_demand,
+                             states = c("US"), max_pct = 150) {
+  
+  last_hour <- max(state_demand$hour, na.rm = TRUE)
+  
+  demand_last <- state_demand %>%
+    filter(hour == last_hour) %>%
+    mutate(state_id = as.character(state_id))
+  
+  capacity_all <- state_capacity %>%
+    mutate(stateId = as.character(stateId))
+  
+  # ---- US totals ----
   us_dem <- sum(demand_last$demand, na.rm = TRUE)
   us_cap <- sum(capacity_all$capability, na.rm = TRUE)
   
-  # --- Build the 2-row data frame ---
-  df <- data.frame(
-    state_id = c(state, "US"),
-    demand   = c(s_dem, us_dem),
-    capacity = c(s_cap, us_cap),
-    stringsAsFactors = FALSE
-  ) %>%
+  # ---- Filas por estado ----
+  per_state <- lapply(states, function(s) {
+    if (s == "US") {
+      data.frame(state_id = "US", demand = us_dem, capacity = us_cap)
+    } else {
+      d  <- sum(demand_last$demand[demand_last$state_id == s],  na.rm = TRUE)
+      cp <- sum(capacity_all$capability[capacity_all$stateId == s], na.rm = TRUE)
+      data.frame(state_id = s, demand = d, capacity = cp)
+    }
+  })
+  
+  df <- do.call(rbind, per_state) %>%
     mutate(
       capacity = ifelse(capacity == 0, NA_real_, capacity),
       pct      = pmin((demand / capacity) * 100, max_pct)
     )
   
-  # keep facet order: state first, then US
-  df$state_id <- factor(df$state_id, levels = c(state, "US"))
+  df$state_id <- factor(df$state_id, levels = states)
   
-  # --- Colored zones (arcs) ---
+  # ---- Zonas ----
   zones <- data.frame(
     start = c(0,  60,  90),
     end   = c(60, 90, 150),
-    color = c("#2ecc71", "#f1c40f", "#e74c3c")   # green / yellow / red
+    color = c("#2ecc71", "#f1c40f", "#e74c3c")
   )
   
   make_zone <- function(start, end, color, state, zone_id) {
@@ -116,15 +110,13 @@ speedometer <- function(state_capacity, state_demand, state, max_pct = 150) {
     r_in  <- 0.65
     r_out <- 1
     data.frame(
-      x = c(r_in * cos(angles), rev(r_out * cos(angles))),
-      y = c(r_in * sin(angles), rev(r_out * sin(angles))),
+      x        = c(r_in * cos(angles), rev(r_out * cos(angles))),
+      y        = c(r_in * sin(angles), rev(r_out * sin(angles))),
       state_id = state,
-      fill = color,
-      zone_id = paste0(state, "_", zone_id)
+      fill     = color,
+      zone_id  = paste0(state, "_", zone_id)
     )
   }
-  
-  states <- levels(df$state_id)
   
   zone_df <- do.call(rbind, lapply(states, function(s) {
     do.call(rbind, lapply(seq_len(nrow(zones)), function(i) {
@@ -133,7 +125,7 @@ speedometer <- function(state_capacity, state_demand, state, max_pct = 150) {
   }))
   zone_df$state_id <- factor(zone_df$state_id, levels = states)
   
-  # --- Needle ---
+  # ---- Agujas ----
   needle_df <- df %>%
     mutate(
       angle = pi * (1 - pct / max_pct),
@@ -141,7 +133,7 @@ speedometer <- function(state_capacity, state_demand, state, max_pct = 150) {
       yend  = 0.95 * sin(angle)
     )
   
-  # --- Tick marks & labels ---
+  # ---- Ticks ----
   tick_pct   <- seq(0, max_pct, by = 30)
   tick_angle <- pi * (1 - tick_pct / max_pct)
   ticks <- data.frame(
@@ -156,7 +148,7 @@ speedometer <- function(state_capacity, state_demand, state, max_pct = 150) {
   ticks_df <- do.call(rbind, lapply(states, function(s) cbind(ticks, state_id = s)))
   ticks_df$state_id <- factor(ticks_df$state_id, levels = states)
   
-  # --- Plot ---
+  # ---- Plot ----
   ggplot() +
     geom_polygon(data = zone_df,
                  aes(x = x, y = y, fill = fill, group = zone_id),
@@ -184,13 +176,13 @@ speedometer <- function(state_capacity, state_demand, state, max_pct = 150) {
     geom_text(data = df,
               aes(x = 0, y = -0.62,
                   label = ifelse(is.na(capacity),
-                                 sprintf("Demand: %.0f\nCapacity: N/A", demand),
-                                 sprintf("Demand: %.0f\nCapacity: %.0f",
+                                 sprintf("Demanda: %.0f\nCapacidad: N/A", demand),
+                                 sprintf("Demanda: %.0f\nCapacidad: %.0f",
                                          demand, capacity))),
               size = 3) +
     facet_wrap(~ state_id, nrow = 1) +
     coord_fixed(xlim = c(-1.25, 1.25), ylim = c(-0.9, 1.15)) +
-    labs(caption = paste("Last hour:", last_hour)) +
+    labs(caption = paste("Última hora:", last_hour)) +
     theme_void(base_size = 12) +
     theme(
       strip.text   = element_text(face = "bold", size = 12),
@@ -200,18 +192,24 @@ speedometer <- function(state_capacity, state_demand, state, max_pct = 150) {
 }
 
 
-
+# -------------------------------------------------------------------
+# make_state_demand_wide: SIN CAMBIOS
+# -------------------------------------------------------------------
 make_state_demand_wide <- function(data) {
   
   ba_to_states <- list(
     BHBA = c("SD", "WY", "MT", "NE", "CO"),
     CISO = c("CA", "NV"),
     ERCO = c("TX"),
-    MISO = c("IL", "IN", "MI", "MN", "WI", "IA", "MO", "ND", "SD", "AR", "KY", "MS", "MT", "OH", "PA", "WV", "LA", "TX", "AL", "GA", "TN", "FL", "NC", "SC"),
+    MISO = c("IL", "IN", "MI", "MN", "WI", "IA", "MO", "ND", "SD", "AR",
+             "KY", "MS", "MT", "OH", "PA", "WV", "LA", "TX", "AL", "GA",
+             "TN", "FL", "NC", "SC"),
     NYIS = c("NY"),
-    PJM = c("PA", "NJ", "MD", "DE", "VA", "WV", "OH", "IN", "IL", "KY", "NC", "TN", "MI", "DC"),
-    PNM = c("NM"),
-    SWPP = c("OK", "KS", "MO", "NE", "ND", "SD", "MT", "WY", "TX", "AR", "LA", "MS", "AL", "GA", "FL", "NC", "SC"),
+    PJM  = c("PA", "NJ", "MD", "DE", "VA", "WV", "OH", "IN", "IL", "KY",
+             "NC", "TN", "MI", "DC"),
+    PNM  = c("NM"),
+    SWPP = c("OK", "KS", "MO", "NE", "ND", "SD", "MT", "WY", "TX", "AR",
+             "LA", "MS", "AL", "GA", "FL", "NC", "SC"),
     SWPW = c("KS", "CO", "NE", "NM", "TX", "OK")
   )
   
@@ -223,7 +221,7 @@ make_state_demand_wide <- function(data) {
     summarise(demand = sum(value, na.rm = TRUE), .groups = "drop") %>%
     left_join(ba_map, by = "parent") %>%
     group_by(hour, parent) %>%
-    mutate(demand = demand / n()) %>%   # remove this if you want full BA demand copied to each state
+    mutate(demand = demand / n()) %>%
     ungroup() %>%
     group_by(hour, state_id) %>%
     summarise(demand = sum(demand, na.rm = TRUE), .groups = "drop") %>%

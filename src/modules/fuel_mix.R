@@ -48,10 +48,10 @@ make_fuel_mix <- function(data){
     scale_y_continuous(labels = scales::comma) +
     scale_x_datetime(date_labels = "%H:%M", date_breaks = "2 hours") +
     labs(
-      title = paste("Fuel Mix on", format(latest_day, "%B %d, %Y")),
-      x = "Hour",
-      y = "Generation (MWh)",
-      fill = "Fuel Type"
+      title = paste("Fuel Mix ", format(latest_day, "%B %d, %Y")),
+      x = "Hora",
+      y = "Generación (MWh)",
+      fill = "Tipo de energía"
     ) +
     theme_minimal() +
     theme(
