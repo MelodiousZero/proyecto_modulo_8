@@ -640,11 +640,19 @@
 "2026-09-11T21","BANC","Balancing Authority of Northern California","DF","Day-ahead demand forecast",2842,"megawatthours"
 "2026-09-11T21","BHBA","Black Hills Energy","D","Demand",1006,"megawatthours"
 "2026-09-11T21","BHBA","Black Hills Energy","DF","Day-ahead demand forecast",959,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T21","BPAT","Bonneville Power Administration","D","Demand",6967,"megawatthours"
 "2026-09-11T21","BPAT","Bonneville Power Administration","DF","Day-ahead demand forecast",7159,"megawatthours"
 "2026-09-11T21","CAL","California","D","Demand",48383,"megawatthours"
 "2026-09-11T21","CAL","California","DF","Day-ahead demand forecast",46358,"megawatthours"
 "2026-09-11T21","CAR","Carolinas","D","Demand",43276,"megawatthours"
+=======
+"2026-09-11T21","BPAT","Bonneville Power Administration","D","Demand",6966,"megawatthours"
+"2026-09-11T21","BPAT","Bonneville Power Administration","DF","Day-ahead demand forecast",7159,"megawatthours"
+"2026-09-11T21","CAL","California","D","Demand",45407,"megawatthours"
+"2026-09-11T21","CAL","California","DF","Day-ahead demand forecast",46358,"megawatthours"
+"2026-09-11T21","CAR","Carolinas","D","Demand",43212,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T21","CAR","Carolinas","DF","Day-ahead demand forecast",40336,"megawatthours"
 "2026-09-11T21","CENT","Central","D","Demand",49123,"megawatthours"
 "2026-09-11T21","CENT","Central","DF","Day-ahead demand forecast",47657,"megawatthours"
@@ -664,7 +672,11 @@
 "2026-09-11T21","EPE","El Paso Electric Company","DF","Day-ahead demand forecast",1924,"megawatthours"
 "2026-09-11T21","ERCO","Electric Reliability Council of Texas, Inc.","D","Demand",85805,"megawatthours"
 "2026-09-11T21","ERCO","Electric Reliability Council of Texas, Inc.","DF","Day-ahead demand forecast",85524,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T21","FLA","Florida","D","Demand",45634,"megawatthours"
+=======
+"2026-09-11T21","FLA","Florida","D","Demand",45642,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T21","FLA","Florida","DF","Day-ahead demand forecast",43085,"megawatthours"
 "2026-09-11T21","FMPP","Florida Municipal Power Pool","D","Demand",3175,"megawatthours"
 "2026-09-11T21","FMPP","Florida Municipal Power Pool","DF","Day-ahead demand forecast",3402,"megawatthours"
@@ -686,13 +698,21 @@
 "2026-09-11T21","ISNE","ISO New England","DF","Day-ahead demand forecast",13530,"megawatthours"
 "2026-09-11T21","JEA","JEA","D","Demand",2584,"megawatthours"
 "2026-09-11T21","JEA","JEA","DF","Day-ahead demand forecast",2458,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T21","LDWP","Los Angeles Department of Water and Power","D","Demand",4176,"megawatthours"
+=======
+"2026-09-11T21","LDWP","Los Angeles Department of Water and Power","D","Demand",1691,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T21","LDWP","Los Angeles Department of Water and Power","DF","Day-ahead demand forecast",4916,"megawatthours"
 "2026-09-11T21","LGEE","LG&E and KU Services Company as agent for Louisville Gas and Electric Company and Kentucky Utilities Company","D","Demand",5726,"megawatthours"
 "2026-09-11T21","LGEE","LG&E and KU Services Company as agent for Louisville Gas and Electric Company and Kentucky Utilities Company","DF","Day-ahead demand forecast",5354,"megawatthours"
 "2026-09-11T21","MIDA","Mid-Atlantic","D","Demand",123331,"megawatthours"
 "2026-09-11T21","MIDA","Mid-Atlantic","DF","Day-ahead demand forecast",119825,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T21","MIDW","Midwest","D","Demand",108565,"megawatthours"
+=======
+"2026-09-11T21","MIDW","Midwest","D","Demand",108571,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T21","MIDW","Midwest","DF","Day-ahead demand forecast",105985,"megawatthours"
 "2026-09-11T21","MISO","Midcontinent Independent System Operator, Inc.","D","Demand",99398,"megawatthours"
 "2026-09-11T21","MISO","Midcontinent Independent System Operator, Inc.","DF","Day-ahead demand forecast",97458,"megawatthours"
@@ -700,7 +720,11 @@
 "2026-09-11T21","NE","New England","DF","Day-ahead demand forecast",13530,"megawatthours"
 "2026-09-11T21","NEVP","Nevada Power Company","D","Demand",7457,"megawatthours"
 "2026-09-11T21","NEVP","Nevada Power Company","DF","Day-ahead demand forecast",6835,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T21","NW","Northwest","D","Demand",47700,"megawatthours"
+=======
+"2026-09-11T21","NW","Northwest","D","Demand",47442,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T21","NW","Northwest","DF","Day-ahead demand forecast",45963,"megawatthours"
 "2026-09-11T21","NWMT","NorthWestern Corporation","D","Demand",1269,"megawatthours"
 "2026-09-11T21","NWMT","NorthWestern Corporation","DF","Day-ahead demand forecast",1267,"megawatthours"
@@ -718,7 +742,11 @@
 "2026-09-11T21","PJM","PJM Interconnection, LLC","DF","Day-ahead demand forecast",119825,"megawatthours"
 "2026-09-11T21","PNM","Public Service Company of New Mexico","D","Demand",2211,"megawatthours"
 "2026-09-11T21","PNM","Public Service Company of New Mexico","DF","Day-ahead demand forecast",2231,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T21","PSCO","Public Service Company of Colorado","D","Demand",5337,"megawatthours"
+=======
+"2026-09-11T21","PSCO","Public Service Company of Colorado","D","Demand",5300,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T21","PSCO","Public Service Company of Colorado","DF","Day-ahead demand forecast",5194,"megawatthours"
 "2026-09-11T21","PSEI","Puget Sound Energy, Inc.","D","Demand",2571,"megawatthours"
 "2026-09-11T21","PSEI","Puget Sound Energy, Inc.","DF","Day-ahead demand forecast",1643,"megawatthours"
@@ -737,7 +765,11 @@
 "2026-09-11T21","SPA","Southwestern Power Administration","D","Demand",22,"megawatthours"
 "2026-09-11T21","SRP","Salt River Project Agricultural Improvement and Power District","D","Demand",6210,"megawatthours"
 "2026-09-11T21","SRP","Salt River Project Agricultural Improvement and Power District","DF","Day-ahead demand forecast",7515,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T21","SW","Southwest","D","Demand",22291,"megawatthours"
+=======
+"2026-09-11T21","SW","Southwest","D","Demand",17548,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T21","SW","Southwest","DF","Day-ahead demand forecast",22630,"megawatthours"
 "2026-09-11T21","SWPP","Southwest Power Pool","D","Demand",49101,"megawatthours"
 "2026-09-11T21","SWPP","Southwest Power Pool","DF","Day-ahead demand forecast",47657,"megawatthours"
@@ -759,7 +791,11 @@
 "2026-09-11T21","TPWR","City of Tacoma, Department of Public Utilities, Light Division","DF","Day-ahead demand forecast",473,"megawatthours"
 "2026-09-11T21","TVA","Tennessee Valley Authority","D","Demand",29626,"megawatthours"
 "2026-09-11T21","TVA","Tennessee Valley Authority","DF","Day-ahead demand forecast",29730,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T21","US48","United States Lower 48","D","Demand",673729,"megawatthours"
+=======
+"2026-09-11T21","US48","United States Lower 48","D","Demand",665654,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T21","US48","United States Lower 48","DF","Day-ahead demand forecast",658951,"megawatthours"
 "2026-09-11T21","WALC","Western Area Power Administration - Desert Southwest Region","D","Demand",1301,"megawatthours"
 "2026-09-11T21","WALC","Western Area Power Administration - Desert Southwest Region","DF","Day-ahead demand forecast",1093,"megawatthours"
@@ -775,7 +811,11 @@
 "2026-09-11T20","BHBA","Black Hills Energy","DF","Day-ahead demand forecast",938,"megawatthours"
 "2026-09-11T20","BPAT","Bonneville Power Administration","D","Demand",6930,"megawatthours"
 "2026-09-11T20","BPAT","Bonneville Power Administration","DF","Day-ahead demand forecast",7130,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T20","CAL","California","D","Demand",48061,"megawatthours"
+=======
+"2026-09-11T20","CAL","California","D","Demand",47150,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T20","CAL","California","DF","Day-ahead demand forecast",44265,"megawatthours"
 "2026-09-11T20","CAR","Carolinas","D","Demand",41869,"megawatthours"
 "2026-09-11T20","CAR","Carolinas","DF","Day-ahead demand forecast",40047,"megawatthours"
@@ -819,7 +859,11 @@
 "2026-09-11T20","ISNE","ISO New England","DF","Day-ahead demand forecast",11480,"megawatthours"
 "2026-09-11T20","JEA","JEA","D","Demand",2549,"megawatthours"
 "2026-09-11T20","JEA","JEA","DF","Day-ahead demand forecast",2506,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T20","LDWP","Los Angeles Department of Water and Power","D","Demand",4925,"megawatthours"
+=======
+"2026-09-11T20","LDWP","Los Angeles Department of Water and Power","D","Demand",3992,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T20","LDWP","Los Angeles Department of Water and Power","DF","Day-ahead demand forecast",4695,"megawatthours"
 "2026-09-11T20","LGEE","LG&E and KU Services Company as agent for Louisville Gas and Electric Company and Kentucky Utilities Company","D","Demand",5524,"megawatthours"
 "2026-09-11T20","LGEE","LG&E and KU Services Company as agent for Louisville Gas and Electric Company and Kentucky Utilities Company","DF","Day-ahead demand forecast",5293,"megawatthours"
@@ -833,7 +877,11 @@
 "2026-09-11T20","NE","New England","DF","Day-ahead demand forecast",11480,"megawatthours"
 "2026-09-11T20","NEVP","Nevada Power Company","D","Demand",7104,"megawatthours"
 "2026-09-11T20","NEVP","Nevada Power Company","DF","Day-ahead demand forecast",6455,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T20","NW","Northwest","D","Demand",46476,"megawatthours"
+=======
+"2026-09-11T20","NW","Northwest","D","Demand",46433,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T20","NW","Northwest","DF","Day-ahead demand forecast",44693,"megawatthours"
 "2026-09-11T20","NWMT","NorthWestern Corporation","D","Demand",1292,"megawatthours"
 "2026-09-11T20","NWMT","NorthWestern Corporation","DF","Day-ahead demand forecast",1269,"megawatthours"
@@ -892,7 +940,11 @@
 "2026-09-11T20","TPWR","City of Tacoma, Department of Public Utilities, Light Division","DF","Day-ahead demand forecast",474,"megawatthours"
 "2026-09-11T20","TVA","Tennessee Valley Authority","D","Demand",29577,"megawatthours"
 "2026-09-11T20","TVA","Tennessee Valley Authority","DF","Day-ahead demand forecast",29416,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T20","US48","United States Lower 48","D","Demand",663083,"megawatthours"
+=======
+"2026-09-11T20","US48","United States Lower 48","D","Demand",662128,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T20","US48","United States Lower 48","DF","Day-ahead demand forecast",647971,"megawatthours"
 "2026-09-11T20","WALC","Western Area Power Administration - Desert Southwest Region","D","Demand",1300,"megawatthours"
 "2026-09-11T20","WALC","Western Area Power Administration - Desert Southwest Region","DF","Day-ahead demand forecast",974,"megawatthours"
@@ -908,7 +960,11 @@
 "2026-09-11T19","BHBA","Black Hills Energy","DF","Day-ahead demand forecast",921,"megawatthours"
 "2026-09-11T19","BPAT","Bonneville Power Administration","D","Demand",6942,"megawatthours"
 "2026-09-11T19","BPAT","Bonneville Power Administration","DF","Day-ahead demand forecast",7116,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T19","CAL","California","D","Demand",48034,"megawatthours"
+=======
+"2026-09-11T19","CAL","California","D","Demand",48025,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T19","CAL","California","DF","Day-ahead demand forecast",42223,"megawatthours"
 "2026-09-11T19","CAR","Carolinas","D","Demand",41383,"megawatthours"
 "2026-09-11T19","CAR","Carolinas","DF","Day-ahead demand forecast",39252,"megawatthours"
@@ -952,7 +1008,11 @@
 "2026-09-11T19","ISNE","ISO New England","DF","Day-ahead demand forecast",10440,"megawatthours"
 "2026-09-11T19","JEA","JEA","D","Demand",2496,"megawatthours"
 "2026-09-11T19","JEA","JEA","DF","Day-ahead demand forecast",2493,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T19","LDWP","Los Angeles Department of Water and Power","D","Demand",4933,"megawatthours"
+=======
+"2026-09-11T19","LDWP","Los Angeles Department of Water and Power","D","Demand",4924,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T19","LDWP","Los Angeles Department of Water and Power","DF","Day-ahead demand forecast",4436,"megawatthours"
 "2026-09-11T19","LGEE","LG&E and KU Services Company as agent for Louisville Gas and Electric Company and Kentucky Utilities Company","D","Demand",5360,"megawatthours"
 "2026-09-11T19","LGEE","LG&E and KU Services Company as agent for Louisville Gas and Electric Company and Kentucky Utilities Company","DF","Day-ahead demand forecast",5194,"megawatthours"
@@ -1025,7 +1085,11 @@
 "2026-09-11T19","TPWR","City of Tacoma, Department of Public Utilities, Light Division","DF","Day-ahead demand forecast",476,"megawatthours"
 "2026-09-11T19","TVA","Tennessee Valley Authority","D","Demand",29089,"megawatthours"
 "2026-09-11T19","TVA","Tennessee Valley Authority","DF","Day-ahead demand forecast",28676,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T19","US48","United States Lower 48","D","Demand",650436,"megawatthours"
+=======
+"2026-09-11T19","US48","United States Lower 48","D","Demand",650427,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T19","US48","United States Lower 48","DF","Day-ahead demand forecast",633444,"megawatthours"
 "2026-09-11T19","WALC","Western Area Power Administration - Desert Southwest Region","D","Demand",1182,"megawatthours"
 "2026-09-11T19","WALC","Western Area Power Administration - Desert Southwest Region","DF","Day-ahead demand forecast",1021,"megawatthours"
@@ -1158,7 +1222,11 @@
 "2026-09-11T18","TPWR","City of Tacoma, Department of Public Utilities, Light Division","DF","Day-ahead demand forecast",470,"megawatthours"
 "2026-09-11T18","TVA","Tennessee Valley Authority","D","Demand",28382,"megawatthours"
 "2026-09-11T18","TVA","Tennessee Valley Authority","DF","Day-ahead demand forecast",27617,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T18","US48","United States Lower 48","D","Demand",629685,"megawatthours"
+=======
+"2026-09-11T18","US48","United States Lower 48","D","Demand",629684,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T18","US48","United States Lower 48","DF","Day-ahead demand forecast",614566,"megawatthours"
 "2026-09-11T18","WALC","Western Area Power Administration - Desert Southwest Region","D","Demand",1184,"megawatthours"
 "2026-09-11T18","WALC","Western Area Power Administration - Desert Southwest Region","DF","Day-ahead demand forecast",951,"megawatthours"
@@ -2562,7 +2630,11 @@
 "2026-09-11T07","NEVP","Nevada Power Company","D","Demand",6307,"megawatthours"
 "2026-09-11T07","NEVP","Nevada Power Company","DF","Day-ahead demand forecast",6026,"megawatthours"
 "2026-09-11T07","NW","Northwest","D","Demand",39958,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T07","NW","Northwest","DF","Day-ahead demand forecast",39110,"megawatthours"
+=======
+"2026-09-11T07","NW","Northwest","DF","Day-ahead demand forecast",38921,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T07","NWMT","NorthWestern Corporation","D","Demand",1156,"megawatthours"
 "2026-09-11T07","NWMT","NorthWestern Corporation","DF","Day-ahead demand forecast",1172,"megawatthours"
 "2026-09-11T07","NY","New York","D","Demand",16386,"megawatthours"
@@ -2621,7 +2693,11 @@
 "2026-09-11T07","TVA","Tennessee Valley Authority","D","Demand",19127,"megawatthours"
 "2026-09-11T07","TVA","Tennessee Valley Authority","DF","Day-ahead demand forecast",19089,"megawatthours"
 "2026-09-11T07","US48","United States Lower 48","D","Demand",496360,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T07","US48","United States Lower 48","DF","Day-ahead demand forecast",484415,"megawatthours"
+=======
+"2026-09-11T07","US48","United States Lower 48","DF","Day-ahead demand forecast",484226,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T07","WALC","Western Area Power Administration - Desert Southwest Region","D","Demand",1163,"megawatthours"
 "2026-09-11T07","WALC","Western Area Power Administration - Desert Southwest Region","DF","Day-ahead demand forecast",771,"megawatthours"
 "2026-09-11T06","AECI","Associated Electric Cooperative, Inc.","D","Demand",2067,"megawatthours"
@@ -2729,7 +2805,11 @@
 "2026-09-11T06","NEVP","Nevada Power Company","NG","Net generation",4279,"megawatthours"
 "2026-09-11T06","NEVP","Nevada Power Company","TI","Total interchange",-987,"megawatthours"
 "2026-09-11T06","NW","Northwest","D","Demand",43311,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T06","NW","Northwest","DF","Day-ahead demand forecast",41541,"megawatthours"
+=======
+"2026-09-11T06","NW","Northwest","DF","Day-ahead demand forecast",41285,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T06","NWMT","NorthWestern Corporation","D","Demand",1198,"megawatthours"
 "2026-09-11T06","NWMT","NorthWestern Corporation","DF","Day-ahead demand forecast",1177,"megawatthours"
 "2026-09-11T06","NY","New York","D","Demand",17085,"megawatthours"
@@ -2808,7 +2888,11 @@
 "2026-09-11T06","TVA","Tennessee Valley Authority","D","Demand",20015,"megawatthours"
 "2026-09-11T06","TVA","Tennessee Valley Authority","DF","Day-ahead demand forecast",20100,"megawatthours"
 "2026-09-11T06","US48","United States Lower 48","D","Demand",519557,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T06","US48","United States Lower 48","DF","Day-ahead demand forecast",506586,"megawatthours"
+=======
+"2026-09-11T06","US48","United States Lower 48","DF","Day-ahead demand forecast",506330,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T06","WALC","Western Area Power Administration - Desert Southwest Region","D","Demand",1169,"megawatthours"
 "2026-09-11T06","WALC","Western Area Power Administration - Desert Southwest Region","DF","Day-ahead demand forecast",851,"megawatthours"
 "2026-09-11T06","WALC","Western Area Power Administration - Desert Southwest Region","NG","Net generation",1671,"megawatthours"
@@ -2922,7 +3006,11 @@
 "2026-09-11T05","NEVP","Nevada Power Company","NG","Net generation",4260,"megawatthours"
 "2026-09-11T05","NEVP","Nevada Power Company","TI","Total interchange",-1025,"megawatthours"
 "2026-09-11T05","NW","Northwest","D","Demand",46274,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T05","NW","Northwest","DF","Day-ahead demand forecast",45088,"megawatthours"
+=======
+"2026-09-11T05","NW","Northwest","DF","Day-ahead demand forecast",44913,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T05","NW","Northwest","NG","Net generation",48455,"megawatthours"
 "2026-09-11T05","NW","Northwest","TI","Total interchange",4290,"megawatthours"
 "2026-09-11T05","NWMT","NorthWestern Corporation","D","Demand",1304,"megawatthours"
@@ -3009,7 +3097,11 @@
 "2026-09-11T05","TVA","Tennessee Valley Authority","D","Demand",21140,"megawatthours"
 "2026-09-11T05","TVA","Tennessee Valley Authority","DF","Day-ahead demand forecast",21522,"megawatthours"
 "2026-09-11T05","US48","United States Lower 48","D","Demand",545668,"megawatthours"
+<<<<<<< HEAD
 "2026-09-11T05","US48","United States Lower 48","DF","Day-ahead demand forecast",538384,"megawatthours"
+=======
+"2026-09-11T05","US48","United States Lower 48","DF","Day-ahead demand forecast",538209,"megawatthours"
+>>>>>>> d129ece9766bce5ae5693c6a74d3bbaf67946069
 "2026-09-11T05","WALC","Western Area Power Administration - Desert Southwest Region","D","Demand",1343,"megawatthours"
 "2026-09-11T05","WALC","Western Area Power Administration - Desert Southwest Region","DF","Day-ahead demand forecast",968,"megawatthours"
 "2026-09-11T05","WALC","Western Area Power Administration - Desert Southwest Region","NG","Net generation",2100,"megawatthours"
