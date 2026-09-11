@@ -5,7 +5,9 @@ library(jsonlite)
 # Pulling the API key from my renviron file
 
 
-load_dot_env(file = ".env")
+if (file.exists(".env")) {
+  load_dot_env(file = ".env")
+}
 
 api_key <- Sys.getenv("eia_key")
 
