@@ -30,7 +30,7 @@ create_value_box <- function(summary) {
   
   # Create the value box with dynamic values
   valueBox(
-    value = paste0(format(round(value, 0), big.mark = ","), " MWh"),
+    value = paste0("Demanda de: ",format(round(value, 0), big.mark = ","), " MWh"),
     caption = change_text,
     icon = icon,
     color = color

@@ -26,7 +26,12 @@ make_us_map <- function(data) {
   
   # --- Preprocesamiento ---
   data <- data %>%
-    mutate(datetime = ymd_h(period), value = as.numeric(value))
+    mutate(
+      datetime = ymd_h(sub("T", " ", period)) %>%
+        force_tz(tzone = "UTC") %>%
+        with_tz(tzone  = "America/Mexico_City"),
+      value = as.numeric(value)
+    )
   
   unique_datetimes <- sort(unique(data$datetime))
   
@@ -40,16 +45,16 @@ make_us_map <- function(data) {
     state    = unique(ba_states_df$state),
     stringsAsFactors = FALSE
   ) %>%
+    # CAMBIO 2: preservar la tz de salida (no forzar UTC)
     mutate(datetime = as.POSIXct(datetime, origin = "1970-01-01",
-                                 tz = "UTC")) %>%
+                                 tz = "America/Mexico_City")) %>%
     left_join(ba_states_df, by = "state") %>%
     left_join(grouped_all, by = c("datetime", "ba" = "parent")) %>%
     rename(value = sum) %>%
     select(datetime, state, value) %>%
-    # 👇 CRÍTICO: ordenar por frame y por state
     arrange(datetime, state)
   
-  # Frame legible para el slider
+  # Frame legible para el slider (ahora en hora CDMX)
   state_values_all$frame_label <- format(state_values_all$datetime,
                                          "%Y-%m-%d %H:%M")
   

@@ -1,16 +1,19 @@
-
 library(ggplot2)
 library(dplyr)
 library(lubridate)
 
-make_forecast <- function(forecast_df) {
-
+make_forecast <- function(forecast_df, tz_salida = "America/Mexico_City") {
   
-  # 1) Filtrar US48 y tipos de interés, parsear fecha y valor
+  # 1) Filtrar US48 y tipos, parsear fecha y valor
+  #    - ymd_h() asume UTC por defecto
+  #    - force_tz("UTC") asegura que el "08" sea 08:00 UTC
+  #    - with_tz() convierte ese instante a hora CDMX
   df <- forecast_df %>%
     filter(respondent == "US48", type %in% c("D", "DF")) %>%
     mutate(
-      period = ymd_h(sub("T", " ", period)),
+      period = ymd_h(sub("T", " ", period)) %>%
+        force_tz(tzone = "UTC") %>%
+        with_tz(tzone = tz_salida),
       value  = as.numeric(value)
     ) %>%
     arrange(period)
@@ -19,12 +22,13 @@ make_forecast <- function(forecast_df) {
   hist_df <- df %>% filter(type == "D")
   fc_df   <- df %>% filter(type == "DF")
   
-  # 3) Quedarnos solo con los últimos días de histórico (por defecto 3)
+  # 3) Últimos 3 días de histórico
+  ultimo_hist <- as.POSIXct(NA, tz = tz_salida)
+  
   if (nrow(hist_df) > 0) {
     ultimo_hist <- max(hist_df$period, na.rm = TRUE)
     hist_reciente <- hist_df %>% filter(period >= ultimo_hist - days(3))
     
-    # Añadir el último punto histórico al forecast para que las líneas conecten
     punto_union <- hist_reciente %>% slice_tail(n = 1) %>% mutate(type = "DF")
     fc_df <- bind_rows(punto_union, fc_df) %>% arrange(period)
   } else {
@@ -33,6 +37,12 @@ make_forecast <- function(forecast_df) {
   
   # 4) Graficar
   ggplot() +
+    geom_vline(
+      xintercept = ultimo_hist,
+      linetype   = "dashed",
+      color      = "grey40",
+      linewidth  = 0.6
+    ) +
     geom_line(
       data = hist_reciente,
       aes(x = period, y = value),
@@ -45,19 +55,21 @@ make_forecast <- function(forecast_df) {
     ) +
     scale_x_datetime(
       date_labels = "%d-%b\n%Hh",
-      date_breaks = "6 hours"
+      date_breaks = "6 hours",
+      timezone    = tz_salida      # <- fuerza la tz en el eje
     ) +
     scale_y_continuous(labels = scales::comma) +
     labs(
       title    = "Demanda eléctrica US48",
-      subtitle = "Histórico reciente y pronóstico day-ahead",
+      subtitle = "Histórico reciente y pronóstico day-ahead (hora CDMX)",
       x        = NULL,
       y        = "Demanda (MWh)",
-      caption = "🔵 Histórico (D)   |   🟠 Pronóstico (DF)"    ) +
+      caption  = "🔵 Histórico (D)      🟠 Pronóstico (DF)      ┆ Data hasta ahora"
+    ) +
     theme_minimal(base_size = 12) +
     theme(
-      axis.text.x     = element_text(angle = 0, hjust = 0.5, size = 9),
+      axis.text.x      = element_text(angle = 0, hjust = 0.5, size = 9),
       panel.grid.minor = element_blank(),
-      plot.title      = element_text(face = "bold")
+      plot.title       = element_text(face = "bold")
     )
 }
