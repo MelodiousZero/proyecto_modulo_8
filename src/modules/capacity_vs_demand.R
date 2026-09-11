@@ -72,18 +72,23 @@ speedometer_grid <- function(state_capacity, state_demand,
   
   capacity_all <- state_capacity %>%
     mutate(stateId = as.character(stateId))
+  capacity_all_no_us <- state_capacity %>%
+    mutate(stateId = as.character(stateId)) %>%
+    filter(stateId != "US")
   
   # ---- US totals ----
   us_dem <- sum(demand_last$demand, na.rm = TRUE)
-  us_cap <- sum(capacity_all$capability, na.rm = TRUE)
-  
+  us_cap <- capacity_all %>%
+    filter(stateId == "US") %>%
+    summarise(capacity = sum(capability, na.rm = TRUE)) %>%
+    pull(capacity)  
   # ---- Filas por estado ----
   per_state <- lapply(states, function(s) {
     if (s == "US") {
       data.frame(state_id = "US", demand = us_dem, capacity = us_cap)
     } else {
       d  <- sum(demand_last$demand[demand_last$state_id == s],  na.rm = TRUE)
-      cp <- sum(capacity_all$capability[capacity_all$stateId == s], na.rm = TRUE)
+      cp <- sum(capacity_all_no_us$capability[capacity_all_no_us$stateId == s], na.rm = TRUE)
       data.frame(state_id = s, demand = d, capacity = cp)
     }
   })

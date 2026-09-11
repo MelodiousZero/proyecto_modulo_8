@@ -22,10 +22,12 @@ source("modules/value_box_module_demand_total.R")
 source("modules/usmap.R")
 source("modules/fuel_mix.R")
 source("modules/capacity_vs_demand.R")
+source("modules/forecast.R")
 
 data <- read.csv("data/hourly_demand_subregion.csv", stringsAsFactors = FALSE)
 data_generation_by_energy_source <- read.csv("data/hourly_generation_by_energy_source.csv", stringsAsFactors = FALSE)
 state_generation_capacity <- read.csv("data/state_generator_capacity.csv",stringsAsFactors = FALSE)
+daily_hour_demand <- read.csv("data/daily_hourly_all.csv",stringsAsFactors=FALSE)
 
 ```
 
@@ -44,7 +46,7 @@ create_value_box(summary)
 
 ```
 
-### Chart C
+### 
 
 
 
@@ -52,7 +54,7 @@ create_value_box(summary)
 make_fuel_mix(data_generation_by_energy_source)
 ```
 
-### Chart C
+### 
 
 
 ```{r}
@@ -63,7 +65,7 @@ capacity_vs_demand(state_generation_capacity,data)
 Column {data-width=700}
 -------------------------------------------------------------
 
-### Chart A
+### 
 
 
 
@@ -73,9 +75,11 @@ make_us_map(data)
 ```
 
 
-### Forecast
+###
 
-foreman
+```{r}
+make_forecast(daily_hour_demand)
+```
 
 Ejemplo2 {data-orientation=rows}
 ===============================
