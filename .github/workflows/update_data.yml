@@ -41,7 +41,7 @@ jobs:
           cache-version: 1
 
       - name: Fetch data from EIA
-        run: Rscript load.R
+        run: Rscript src/utils/load.R
 
       - name: Commit and push CSVs
         run: |
