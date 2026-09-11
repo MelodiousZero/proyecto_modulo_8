@@ -187,7 +187,6 @@ speedometer_grid <- function(state_capacity, state_demand,
               size = 3) +
     facet_wrap(~ state_id, nrow = 1) +
     coord_fixed(xlim = c(-1.25, 1.25), ylim = c(-0.9, 1.15)) +
-    labs(caption = paste("Última hora:", last_hour)) +
     theme_void(base_size = 12) +
     theme(
       strip.text   = element_text(face = "bold", size = 12),
@@ -195,6 +194,9 @@ speedometer_grid <- function(state_capacity, state_demand,
       plot.margin  = margin(10, 10, 10, 10)
     )
 }
+
+
+
 
 
 # -------------------------------------------------------------------
