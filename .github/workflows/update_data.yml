@@ -50,7 +50,7 @@ jobs:
 
           # git add -A: agrega archivos nuevos, modificados y borrados.
           # Sin globs (que el shell expande) y sin ocultar errores.
-          git add -A src/data/ data/ 2>&1 || true
+          git add -A src/data/
 
           echo "=== Staged files ==="
           git diff --cached --name-only
