@@ -1,0 +1,60 @@
+name: Update EIA Data
+
+on:
+  schedule:
+    - cron: '0 6 * * *'      # diario a las 6:00 UTC
+  workflow_dispatch:
+    inputs:
+      force_refresh:
+        description: 'Forzar descarga completa (ignorar cache)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write             # necesario para que el bot pueda hacer push
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+
+    env:
+      eia_key: ${{ secrets.EIA_KEY }}     # conecta el secret con Sys.getenv("eia_key")
+      FORCE_REFRESH: ${{ inputs.force_refresh }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - name: Install R dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::EIAapi
+            any::dotenv
+            any::httr
+            any::jsonlite
+          cache-version: 1
+
+      - name: Fetch data from EIA
+        run: Rscript load.R
+
+      - name: Commit and push CSVs
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Añade las rutas donde tu load.R guarda los CSV.
+          # El '2>/dev/null || true' evita que falle si alguna ruta no existe.
+          git add src/data/*.csv data/*.csv 2>/dev/null || true
+
+          if git diff --cached --quiet; then
+            echo "Sin cambios en los CSVs"
+          else
+            git commit -m "Auto-update EIA data ($(date -u +'%Y-%m-%d'))"
+            git push
+          fi
