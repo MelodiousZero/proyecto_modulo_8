@@ -31,6 +31,7 @@ source("modules/usmap_sales.R")
 source("modules/value_box_sales.R")
 source("modules/bar_graphs_sales.R")
 source("modules/incidents.R")
+source("modules/value_boxes_outages.R")
 
 data <- read.csv("data/hourly_demand_subregion.csv", stringsAsFactors = FALSE)
 data_generation_by_energy_source <- read.csv("data/hourly_generation_by_energy_source.csv", stringsAsFactors = FALSE)
@@ -162,8 +163,24 @@ Apagones {data-orientation=rows}
 ===============================
 
 
+Row {data-height=5}
+-----------------------------------------------------------------------
 
-Row {data-height=150}
+###
+
+```{r}
+make_value_box_incidents(indicents_df)
+```
+
+
+###
+
+```{r}
+make_state_with_most_problems(indicents_df)
+```
+
+
+Row {data-height=75}
 -----------------------------------------------------------------------
 
 ### 
@@ -171,5 +188,22 @@ Row {data-height=150}
 make_incidents_map(indicents_df)
 ```
 
+
+Row {data-height=20}
+----------------------------------------------------------------------
+
+
+
+###
+
+```{r}
+make_status_bar_graph(indicents_df)
+```
+
+###
+
+```{r}
+make_causes_bar_graph(indicents_df)
+```
 
 
