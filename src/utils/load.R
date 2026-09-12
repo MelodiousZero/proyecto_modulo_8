@@ -2,6 +2,11 @@ library(EIAapi)
 library(dotenv)
 library(httr)
 library(jsonlite)
+
+library(httr)
+library(jsonlite)
+library(sf)
+
 # Pulling the API key from my renviron file
 
 

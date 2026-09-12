@@ -165,7 +165,7 @@ Row {data-height=150}
 
 ### 
 ```{r}
-make_incidents_map(indicents_df)
+#make_incidents_map(indicents_df)
 ```
 
 
