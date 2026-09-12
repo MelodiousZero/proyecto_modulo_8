@@ -36,6 +36,7 @@ jobs:
             any::httr
             any::jsonlite
             any::here
+            any::sf
           cache-version: 1
 
       - name: Fetch data from EIA

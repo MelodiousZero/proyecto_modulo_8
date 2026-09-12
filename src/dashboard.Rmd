@@ -30,7 +30,7 @@ source("modules/forecast.R")
 source("modules/usmap_sales.R")
 source("modules/value_box_sales.R")
 source("modules/bar_graphs_sales.R")
-source("modules/incicents.R")
+source("modules/incidents.R")
 
 data <- read.csv("data/hourly_demand_subregion.csv", stringsAsFactors = FALSE)
 data_generation_by_energy_source <- read.csv("data/hourly_generation_by_energy_source.csv", stringsAsFactors = FALSE)
@@ -168,7 +168,7 @@ Row {data-height=150}
 
 ### 
 ```{r}
-#make_incidents_map(indicents_df)
+make_incidents_map(indicents_df)
 ```
 
 
