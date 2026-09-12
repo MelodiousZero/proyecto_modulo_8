@@ -6,6 +6,7 @@ library(jsonlite)
 library(httr)
 library(jsonlite)
 library(sf)
+library(dplyr)
 
 # Pulling the API key from my renviron file
 
