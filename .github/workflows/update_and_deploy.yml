@@ -89,6 +89,7 @@ jobs:
             any::usmap
             any::ggplot2
             any::here
+            any::maps
           cache-version: 1
 
       - name: Render dashboard
