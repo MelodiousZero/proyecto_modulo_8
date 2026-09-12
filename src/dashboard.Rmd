@@ -23,11 +23,16 @@ source("modules/usmap.R")
 source("modules/fuel_mix.R")
 source("modules/capacity_vs_demand.R")
 source("modules/forecast.R")
+source("modules/usmap_sales.R")
+source("modules/value_box_sales.R")
+source("modules/bar_graphs_sales.R")
 
 data <- read.csv("data/hourly_demand_subregion.csv", stringsAsFactors = FALSE)
 data_generation_by_energy_source <- read.csv("data/hourly_generation_by_energy_source.csv", stringsAsFactors = FALSE)
 state_generation_capacity <- read.csv("data/state_generator_capacity.csv",stringsAsFactors = FALSE)
 daily_hour_demand <- read.csv("data/daily_hourly_all.csv",stringsAsFactors=FALSE)
+sales_monthly <- read.csv("data/sales_to_customers_monthly.csv",stringsAsFactors=FALSE)
+sales_quarterly <- read.csv("data/sales_to_customers_quarterly.csv",stringsAsFactors=FALSE)
 
 ```
 
@@ -81,43 +86,63 @@ make_us_map(data)
 make_forecast(daily_hour_demand)
 ```
 
-Ejemplo2 {data-orientation=rows}
+Ventas {data-orientation=rows}
 ===============================
+
+
+
+Row {data-height=150}
+-----------------------------------------------------------------------
+
+### 
+```{r}
+make_current_month_box(sales_monthly)
+```
+
+Row {data-height=100}
+-----------------------------------------------------------------------
+
+### 
+
+```{r}
+make_value_box_total_revenue_month(sales_monthly)
+```
+### 
+
+```{r}
+make_value_box_total_customers_month(sales_monthly)
+```
+
+### 
+
+```{r}
+make_value_box_total_sales_month(sales_monthly)
+```
 
 Row {data-height=700}
 -----------------------------------------------------------------------
 
-### Chart d
+### 
 
 ```{r}
-
+make_revenue_quarters_yoy(sales_quarterly)
 ```
-### Chart f
+
+### 
 
 ```{r}
-
+make_sector_decomposition_bars(sales_monthly)
 ```
 
-### Chart g
 
-```{r}
-
-```
-
-Row {data-height=300}
+Row {data-height=1000}
 -----------------------------------------------------------------------
 
-### Chart e
+### 
 
 ```{r}
-
+make_usmap_sales(sales_monthly)
 ```
 
-Row {data-height=300}
------------------------------------------------------------------------
 
-### Chart k
 
-```{r}
-
-```
