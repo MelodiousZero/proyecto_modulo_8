@@ -5,13 +5,9 @@ make_current_month_box <- function(sales_to_customers_monthly){
   # --- Normalize ---
   df <- sales_to_customers_monthly %>%
     mutate(
-      stateid  = toupper(trimws(as.character(stateid))),
-      sectorid = toupper(trimws(as.character(sectorid))),
       period   = trimws(as.character(period)),
-      sales    = as.numeric(sales)
-    ) %>%
-    filter(sectorid == "ALL", stateid == "US")
-  
+    )
+
   # --- Latest period + same month previous year ---
   latest_period <- max(df$period, na.rm = TRUE)   # e.g. "2026-09"
   yr <- as.integer(substr(latest_period, 1, 4))

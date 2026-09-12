@@ -18,6 +18,7 @@ library(lubridate)
 library(shiny)
 library(plotly)
 library(DT)
+library(maps)
 source("modules/value_box_module_demand_total.R")
 source("modules/usmap.R")
 source("modules/fuel_mix.R")
@@ -26,6 +27,7 @@ source("modules/forecast.R")
 source("modules/usmap_sales.R")
 source("modules/value_box_sales.R")
 source("modules/bar_graphs_sales.R")
+source("modules/indicents.R")
 
 data <- read.csv("data/hourly_demand_subregion.csv", stringsAsFactors = FALSE)
 data_generation_by_energy_source <- read.csv("data/hourly_generation_by_energy_source.csv", stringsAsFactors = FALSE)
@@ -33,6 +35,7 @@ state_generation_capacity <- read.csv("data/state_generator_capacity.csv",string
 daily_hour_demand <- read.csv("data/daily_hourly_all.csv",stringsAsFactors=FALSE)
 sales_monthly <- read.csv("data/sales_to_customers_monthly.csv",stringsAsFactors=FALSE)
 sales_quarterly <- read.csv("data/sales_to_customers_quarterly.csv",stringsAsFactors=FALSE)
+indicents_df <- read.csv("data/odin_real_time_outages_county.csv",stringsAsFactors = FALSE)
 
 ```
 
@@ -42,6 +45,12 @@ Demanda por hora
 
 Column {data-width=300}
 -----------------------------------------------------------------------
+
+### 
+
+```{r}
+make_current_month_box(data)
+```
 
 ### Chart B
 
@@ -142,6 +151,21 @@ Row {data-height=1000}
 
 ```{r}
 make_usmap_sales(sales_monthly)
+```
+
+
+
+Apagones {data-orientation=rows}
+===============================
+
+
+
+Row {data-height=150}
+-----------------------------------------------------------------------
+
+### 
+```{r}
+make_incidents_map(indicents_df)
 ```
 
 

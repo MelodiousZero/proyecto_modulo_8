@@ -39,17 +39,9 @@ fetch_and_save_eia_data <- function(path_index, csv_filename) {
   return(df)
 }
 
-df1 <- fetch_and_save_eia_data(
-  path_index = 1,
-  csv_filename = "src/data/daily_hourly_all.csv"
-)
 
 
 
-df3 <- fetch_and_save_eia_data(
-  path_index = 3,
-  csv_filename = "src/data/hourly_generation_by_energy_source.csv"
-)
 
 df4 <- fetch_and_save_eia_data(
   path_index = 4,
@@ -210,5 +202,57 @@ respuesta <- GET(
 
 datos <- fromJSON(content(respuesta, "text"))$response$data
 write.csv(datos, "src/data/sales_to_customers_monthly.csv", row.names = FALSE)
+
+
+offsets <- c(0,5000,10000,15000)
+datos <- NULL
+
+for (off in offsets) {
+  
+  resp <- GET(
+    "https://api.eia.gov/v2/electricity/rto/region-data/data/",
+    query = list(
+      api_key              = api_key,
+      frequency            = "hourly",
+      `data[0]`            = "value",
+      `sort[0][column]`    = "period",
+      `sort[0][direction]` = "desc",
+      offset               = off,
+      length               = 5000
+    )
+  )
+  datos <- bind_rows(datos, fromJSON(content(resp, "text"))$response$data)
+  Sys.sleep(0.3)
+}
+
+write.csv(datos, "src/data/daily_hourly_all.csv", row.names = FALSE)
+
+
+datos <- NULL
+
+for (off in offsets){
+    
+  resp <- GET(
+    "https://api.eia.gov/v2/electricity/rto/fuel-type-data/data/",
+    query = list(
+      api_key=api_key,
+      frequency="hourly",
+      `data[0]`            = "value",
+      `sort[0][column]`    = "period",
+      `sort[0][direction]` = "desc",
+      offset               = off,
+      length               = 5000
+    )
+  )
+  datos <- bind_rows(datos, fromJSON(content(resp, "text"))$response$data)
+  Sys.sleep(0.3)
+}
+
+write.csv(datos, "src/data/hourly_generation_by_energy_source.csv", row.names = FALSE)
+
+
+
+
+
 
 

@@ -1,13 +1,13 @@
 library(ggplot2)
 library(dplyr)
 library(lubridate)
+library(scales)
 
-make_forecast <- function(forecast_df, tz_salida = "America/Mexico_City") {
+make_forecast <- function(forecast_df,
+                          tz_salida = "America/Mexico_City",
+                          marcar_picos = TRUE) {
   
-  # 1) Filtrar US48 y tipos, parsear fecha y valor
-  #    - ymd_h() asume UTC por defecto
-  #    - force_tz("UTC") asegura que el "08" sea 08:00 UTC
-  #    - with_tz() convierte ese instante a hora CDMX
+  # ---- 1) Parseo ----------------------------------------------------------
   df <- forecast_df %>%
     filter(respondent == "US48", type %in% c("D", "DF")) %>%
     mutate(
@@ -18,53 +18,88 @@ make_forecast <- function(forecast_df, tz_salida = "America/Mexico_City") {
     ) %>%
     arrange(period)
   
-  # 2) Separar histórico y pronóstico
   hist_df <- df %>% filter(type == "D")
   fc_df   <- df %>% filter(type == "DF")
   
-  # 3) Últimos 3 días de histórico
-  ultimo_hist <- as.POSIXct(NA, tz = tz_salida)
+  inicio <- min(df$period, na.rm = TRUE)
+  fin    <- max(df$period, na.rm = TRUE)
   
-  if (nrow(hist_df) > 0) {
-    ultimo_hist <- max(hist_df$period, na.rm = TRUE)
-    hist_reciente <- hist_df %>% filter(period >= ultimo_hist - days(3))
-    
+  ultimo_hist <- if (nrow(hist_df) > 0) max(hist_df$period, na.rm = TRUE) else NA
+  
+  hist_reciente <- hist_df %>% filter(period >= inicio)
+  
+  if (!is.na(ultimo_hist)) {
     punto_union <- hist_reciente %>% slice_tail(n = 1) %>% mutate(type = "DF")
     fc_df <- bind_rows(punto_union, fc_df) %>% arrange(period)
-  } else {
-    hist_reciente <- hist_df
   }
   
-  # 4) Graficar
-  ggplot() +
+  # ---- 2) Detección de picos (máximo local por día) ----------------------
+  picos <- hist_reciente %>%
+    arrange(period) %>%
+    mutate(
+      prev   = lag(value),
+      next_v = lead(value),
+      es_pico = !is.na(prev) & !is.na(next_v) & value > prev & value > next_v
+    ) %>%
+    filter(es_pico) %>%
+    mutate(dia = as.Date(period, tz = tz_salida)) %>%
+    group_by(dia) %>%
+    slice_max(value, n = 1, with_ties = FALSE) %>%
+    ungroup() %>%
+    mutate(etiqueta = label_number(scale_cut = cut_short_scale())(value))
+  
+  # ---- 3) Gráfica ---------------------------------------------------------
+  p <- ggplot() +
     geom_vline(
       xintercept = ultimo_hist,
-      linetype   = "dashed",
-      color      = "grey40",
-      linewidth  = 0.6
+      linetype   = "dashed", color = "grey40",
+      linewidth  = 0.6, na.rm = TRUE
     ) +
     geom_line(
       data = hist_reciente,
-      aes(x = period, y = value),
+      aes(period, value),
       color = "steelblue", linewidth = 0.8
     ) +
     geom_line(
       data = fc_df,
-      aes(x = period, y = value),
+      aes(period, value),
       color = "orange", linewidth = 0.9, linetype = "dashed"
-    ) +
+    )
+  
+  # Capa de picos (solo si hay y se pidió)
+  if (marcar_picos && nrow(picos) > 0) {
+    p <- p +
+      geom_point(
+        data = picos, aes(period, value),
+        color = "steelblue", size = 2.2, shape = 21,
+        fill = "white", stroke = 1
+      ) +
+      geom_text(
+        data = picos, aes(period, value, label = etiqueta),
+        vjust = -1.3, size = 3, color = "grey25", fontface = "bold"
+      )
+  }
+  
+  p +
     scale_x_datetime(
-      date_labels = "%d-%b\n%Hh",
+      date_labels = "%d\n%Hh",
       date_breaks = "6 hours",
-      timezone    = tz_salida      # <- fuerza la tz en el eje
+      timezone    = tz_salida,
+      limits      = c(inicio, fin)
     ) +
-    scale_y_continuous(labels = scales::comma) +
+    scale_y_continuous(
+      labels = comma,
+      expand = expansion(mult = c(0.05, 0.12))   # aire arriba para etiquetas
+    ) +
     labs(
       title    = "Demanda eléctrica US48",
-      subtitle = "Histórico reciente y pronóstico day-ahead (hora CDMX)",
-      x        = NULL,
-      y        = "Demanda (MWh)",
-      caption  = "🔵 Histórico (D)      🟠 Pronóstico (DF)      ┆ Data hasta ahora"
+      subtitle = sprintf(
+        "Histórico (D) + Pronóstico day-ahead (DF) — %s a %s (hora CDMX)",
+        format(inicio, "%d-%b %Hh"),
+        format(fin,    "%d-%b %Hh")
+      ),
+      x = NULL, y = "Demanda (MWh)",
+      caption = "🔵 Histórico (D)      🟠 Pronóstico (DF)      ┆ último dato D      ● Pico diario"
     ) +
     theme_minimal(base_size = 12) +
     theme(
