@@ -1,0 +1,106 @@
+---
+title: |
+  \begin{center}
+  \includegraphics[width=0.4\textwidth]{banner-fciencias-color-dark.png}\\[2em]
+  Proyecto Final - Módulo 8: Demanda y generación eléctrica en Estados Unidos
+  \end{center}
+
+author: 
+  - Raúl Llamosas Alvarado
+  - Eumir Rendon Uresti
+  - Gabriela Peña Franco
+  - Daniela Ibarra Gatica
+  - Randy Jesús García Mejía
+  - Daniela Vázquez Sánchez
+
+
+format:
+    pdf:
+        fontsize: 8pt   
+        toc: true
+        toc-depth: 2
+        geometry: margin=1cm
+        fig-width: 4
+        fig-height: 3
+        code-block-bg: "C4CDD5"
+        include-in-header:
+          - text: |
+              \usepackage{graphicx}
+              \usepackage{titlesec}
+              \usepackage{tocloft}
+              \definecolor{mytitlecolor}{HTML}{0b4166}
+              % Títulos de sección en color
+              \titleformat{\section}{\color{mytitlecolor}\normalfont\Large\bfseries}{\thesection}{1em}{}
+              \titleformat{\subsection}{\color{mytitlecolor}\normalfont\large\bfseries}{\thesubsection}{1em}{}
+              \titleformat{\subsubsection}{\color{mytitlecolor}\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+              % Índice coloreado
+              \renewcommand{\cftsecfont}{\color{mytitlecolor}\bfseries}
+              \renewcommand{\cftsubsecfont}{\color{mytitlecolor}\bfseries}
+
+self-contained: true
+toc: true
+toc-depth: 2
+jupyter: python3
+engine: knitr
+knitr:
+  opts_chunk:
+    echo: false
+params:
+  python_path: "~/Documentos/espacio_trabajo_intro_analisis_dat2/proyecto_modulo_6/.ambiente_virtual_p6/bin/python"
+---
+
+
+# Introducción
+
+Todo nuestro código se encuentra en el [siguiente repositorio de GitHub](https://github.com/MelodiousZero/proyecto_modulo_8).
+Con el dashboard presentado en la exposición localizado en la [siguiente URL](https://melodiouszero.github.io/proyecto_modulo_8)
+
+
+# Problema y contexto
+
+El sistema eléctrico de Estados Unidos tiene una demanda que cambia por hora, día, semana y estación. También es influida por clima actividad humana y características regionales. Sufre de apagones. Y tiene picos de demanda. 
+
+# Pregunta principal
+
+Como tal no elegimos una pregunta principal, intentamos contestar de manera visual las siguientes: 
+
+- ¿Es posible anticipar los periodos de máxima demanda?
+- ¿Qué variables explican los picos de consumo?
+- ¿Cómo cambia el mix de generación durante el día?
+- ¿En qué condiciones aumenta la participación de fuentes renovables?
+- ¿Qué regiones presentan comportamientos similares?
+
+Pero en el uso del modelado contestamos las referentes a las condiciones metereológicas y su peso en la demanda eléctrica.
+
+# Datos y procedencia
+
+Para este proyecto usamos tres fuentes básicamente:
+
+- [EIA](https://www.eia.gov/electricity/data.php): Sus siglas significan U.S Energy Information Administration, de aquí sacamos la mayoría de la información usada por el dashboard. Cosas como demanda de electricidad, capacidad de los generadores, las ventas en millones de dolares que se obtiene por el suministro de electricdad, provienen de este dataset.  
+- [ODIN](https://openenergyhub.ornl.gov/explore/dataset/odin-real-time-outages-county/api/?disjunctive.cause&disjunctive.name&disjunctive.statuskind&disjunctive.state&disjunctive.county): Este es un departamento liderado por Oak Ridge National Laboratory (ORNL) y la Oficina de Electricidad del Departamento de Energía de Estados Unidos (DOE). De esta base sacamos la información pertinente a los apagones que sufre el sistema de electricidad estadounidense. 
+- [Open-Meteo](https://open-meteo.com/): Una API de uso gratuito para información respecto a condiciones metereológicas.
+
+# Alcance
+# Principales decisiones de limpieza
+
+Para la información proveniente de EIA la limpieza consitió de cambiar el tiempo UTC al horario central que es el que se usa en la Ciudad de México. 
+
+# Metodología
+
+# Modelo
+
+inserte modelo aqui 
+
+# Principales resultados
+
+
+# Conslusiones
+
+# Limitaciones
+
+- La información de apagones proveniente de ODIN es bastante pobre, no tiene mucha información respecto al status o causa de los apagones. 
+- En el caso de EIA, la información que viene es demasiado *descriptiva*, es decir, no tiene información que pudiera servir para un modelaje efectivo. Es más, en alguna de sus rutas de API, ya viene incluido un _forecast_ para predecir demanda. 
+
+# Posibles extensiones
+
+Enriquecer más el proyecto con información de censos.
