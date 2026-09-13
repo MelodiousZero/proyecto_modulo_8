@@ -2,10 +2,14 @@
 <img width="3747" height="1986" alt="imagen" src="https://github.com/user-attachments/assets/3e874237-b0a2-4909-928e-9c4f47aed02d" />
 
 
+## Introducción
 
 Este es el repositorio del proyecto final del modulo 8 del Diplomado Introducción Analítica a la Ciencia de Datos. 
 Es un dashboard basado en flexdashboard programado en .R en su mayoría. Con el reporte escrito en .qmd. 
 Para acceder al dashboard [entre a la liga](https://melodiouszero.github.io/proyecto_modulo_8)
+
+
+## Integrantes de equipo
 
 Los integrantes del equipo de este repositorio son: 
 
