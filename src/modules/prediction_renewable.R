@@ -10,9 +10,7 @@ make_prediction_renewables <- function(data_generation_by_energy_source,
                                        forecast_days = 3,
                                        past_days = 4) {
   
-  # ============================================================
-  # Settings
-  # ============================================================
+ 
   RENEWABLE_FUELS <- c("GEO", "SNB", "SUN", "WAT", "WND")
   
   FUEL_LABELS <- c(
@@ -38,9 +36,7 @@ make_prediction_renewables <- function(data_generation_by_energy_source,
     GEO = c("temperature_2m", "hour_sin", "hour_cos", "doy_sin", "doy_cos")
   )
   
-  # ============================================================
-  # 1. Fetch recent + forecast weather
-  # ============================================================
+  
   today      <- Sys.Date()
   start_date <- today - past_days
   end_date   <- today + forecast_days
@@ -71,9 +67,6 @@ make_prediction_renewables <- function(data_generation_by_energy_source,
     timezone = "America/Los_Angeles"
   )
   
-  # ============================================================
-  # 2. Clean weather, add engineered features
-  # ============================================================
   recent_weather_clean <- recent_weather %>%
     rename_with(~ str_remove(.x, "^hourly_"), starts_with("hourly_")) %>%
     rename(period_utc = datetime) %>%
@@ -90,18 +83,14 @@ make_prediction_renewables <- function(data_generation_by_energy_source,
       wind_cubed_80m = wind_speed_80m^3
     )
   
-  # ============================================================
-  # 3. Clean generation, filter renewables + respondent
-  # ============================================================
+ 
   gen_recent <- data_generation_by_energy_source %>%
     filter(respondent == target_respondent,
            fueltype %in% RENEWABLE_FUELS) %>%
     rename(generation = value) %>%
     mutate(period_utc = ymd_hm(paste0(period, ":00"), tz = "UTC"))
   
-  # ============================================================
-  # 4. Load models
-  # ============================================================
+  
   models <- list()
   for (fuel in names(FEATURES)) {
     mpath <- file.path(model_dir, paste0("xgb_", fuel, ".model"))
@@ -111,9 +100,7 @@ make_prediction_renewables <- function(data_generation_by_energy_source,
   }
   if (length(models) == 0) stop("No models found in ", model_dir)
   
-  # ============================================================
-  # 5. Predict on the full weather frame (past + future)
-  # ============================================================
+  
   preds_list <- purrr::map_dfr(names(models), function(fuel) {
     feat <- intersect(FEATURES[[fuel]], names(recent_weather_clean))
     if (length(feat) == 0) return(NULL)
@@ -126,9 +113,7 @@ make_prediction_renewables <- function(data_generation_by_energy_source,
     )
   })
   
-  # ============================================================
-  # 6. Join actuals where available
-  # ============================================================
+  
   combined <- preds_list %>%
     left_join(
       gen_recent %>% select(period_utc, fueltype, generation),
@@ -136,9 +121,7 @@ make_prediction_renewables <- function(data_generation_by_energy_source,
     ) %>%
     arrange(fueltype, period_utc)
   
-  # ============================================================
-  # 7. Plot
-  # ============================================================
+  
   plot_df <- combined %>%
     pivot_longer(
       cols = c(generation, prediction),

@@ -5,12 +5,10 @@ from retry_requests import retry
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-# --- Setup Open-Meteo API client with cache and retry ---
 cache_session = requests_cache.CachedSession('.cache', expire_after=3600)
 retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
 openmeteo = openmeteo_requests.Client(session=retry_session)
 
-# --- Date range: multi-year history, ending ~5 days ago (archive lag) ---
 today = datetime.now(timezone.utc).date()
 archive_end = today - timedelta(days=5)
 
@@ -21,7 +19,6 @@ print(f"Today:        {today}")
 print(f"Archive end:  {end_date}")
 print(f"Fetching:     {start_date} → {end_date}")
 
-# --- Curated hourly variables (fuel-relevant) ---
 HOURLY_VARS = [
     # Solar
     "shortwave_radiation", "direct_radiation", "diffuse_radiation",
@@ -45,7 +42,6 @@ HOURLY_VARS = [
     "weather_code", "precipitation_probability",
 ]
 
-# --- Archive endpoint (historical reanalysis, 1940 → ~5 days ago) ---
 url = "https://archive-api.open-meteo.com/v1/archive"
 params = {
     "latitude": 32.7157,
@@ -63,7 +59,6 @@ print(f"\nCoordinates: {response.Latitude()}°N {response.Longitude()}°E")
 print(f"Elevation:   {response.Elevation()} m asl")
 print(f"UTC offset:  {response.UtcOffsetSeconds()}s")
 
-# --- Build hourly DataFrame ---
 hourly = response.Hourly()
 
 times = pd.date_range(
@@ -79,7 +74,6 @@ for i, var in enumerate(HOURLY_VARS):
 
 hourly_dataframe = pd.DataFrame(data=hourly_data)
 
-# --- Save ---
 out_path = Path("src/modules/machine_learning/ml_data/historic_hourly_weather_data.csv")
 hourly_dataframe.to_csv(out_path, index=False)
 

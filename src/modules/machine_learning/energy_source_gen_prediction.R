@@ -2,14 +2,12 @@ library(tidyverse)
 library(lubridate)
 library(xgboost)
 
-# --- Load ---
 df <- read_csv(
   "src/modules/machine_learning/ml_data/merged_generation_weather.csv",
   show_col_types = FALSE
 ) %>%
   rename(generation = value)
 
-# --- Clean & feature-engineer ---
 df <- df %>%
   filter(!is.na(generation), generation > 0) %>%
   mutate(
@@ -18,20 +16,16 @@ df <- df %>%
     dow        = wday(period_utc, week_start = 1),
     month      = month(period_utc),
     doy        = yday(period_utc),
-    # Cyclic encodings (crucial for hour and day-of-year)
     hour_sin   = sin(2 * pi * hour_pt / 24),
     hour_cos   = cos(2 * pi * hour_pt / 24),
     doy_sin    = sin(2 * pi * doy / 365),
     doy_cos    = cos(2 * pi * doy / 365),
-    # Wind direction as sin/cos (raw degrees are not ordinal)
     wdir80_sin = sin(2 * pi * wind_direction_80m / 360),
     wdir80_cos = cos(2 * pi * wind_direction_80m / 360),
-    # Wind cube — power curves scale with v^3
     wind_cubed_80m = wind_speed_80m^3
   ) %>%
   arrange(period_utc)
 
-# --- Features by fuel type ---
 features <- list(
   SUN = c("shortwave_radiation", "direct_normal_irradiance",
           "diffuse_radiation", "cloud_cover", "cloud_cover_low",
@@ -51,7 +45,6 @@ features <- list(
           "doy_sin", "doy_cos")
 )
 
-# --- Train/test split: 80% past, 20% future (per fuel) ---
 train_one <- function(fuel) {
   d <- df %>% filter(fueltype == fuel)
   if (nrow(d) < 500) {
@@ -60,7 +53,7 @@ train_one <- function(fuel) {
   }
   
   feat <- features[[fuel]]
-  feat <- intersect(feat, names(d))   # guard against missing cols
+  feat <- intersect(feat, names(d))   
   
   n <- nrow(d)
   cut <- floor(0.8 * n)
@@ -102,18 +95,15 @@ results <- lapply(c("SUN", "SNB", "WND", "WAT", "GEO"), train_one)
 names(results) <- c("SUN", "SNB", "WND", "WAT", "GEO")
 results <- results[!sapply(results, is.null)]
 
-# --- Feature importance for one fuel (e.g., solar) ---
 imp <- xgb.importance(
   feature_names = results$SUN$features,
   model = results$SUN$model
 )
 print(imp)
 
-# --- Save predictions for later analysis ---
 preds <- bind_rows(lapply(results, function(r) r$test))
 write_csv(preds, "src/modules/machine_learning/ml_data/predictions.csv")
 
-# --- Save models ---
 dir.create("src/modules/machine_learning/models", showWarnings = FALSE, recursive = TRUE)
 for (fuel in names(results)) {
   xgb.save(results[[fuel]]$model,
