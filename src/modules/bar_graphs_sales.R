@@ -7,7 +7,6 @@ make_sector_decomposition_bars <- function(sales_to_customers_monthly,
   
   metric <- match.arg(metric)
   
-  # --- Normalize ---
   df <- sales_to_customers_monthly %>%
     mutate(
       stateid    = toupper(trimws(as.character(stateid))),
@@ -17,12 +16,10 @@ make_sector_decomposition_bars <- function(sales_to_customers_monthly,
       value      = as.numeric(.data[[metric]])
     )
   
-  # --- Default year = current year of latest period ---
   if (is.null(year)) {
     year <- as.integer(substr(max(df$period, na.rm = TRUE), 1, 4))
   }
   
-  # --- Filter: US total, exclude ALL, only this year ---
   df_year <- df %>%
     filter(stateid == "US",
            sectorid != "ALL",
@@ -37,16 +34,14 @@ make_sector_decomposition_bars <- function(sales_to_customers_monthly,
     return(NULL)
   }
   
-  # --- Spanish month labels for x-axis ---
   meses_es <- c("Ene","Feb","Mar","Abr","May","Jun",
                 "Jul","Ago","Sep","Oct","Nov","Dic")
   df_year <- df_year %>%
     mutate(
       month_lbl = meses_es[as.integer(substr(period, 6, 7))],
-      month_lbl = factor(month_lbl, levels = meses_es)   # orden cronológico
+      month_lbl = factor(month_lbl, levels = meses_es)   
     )
   
-  # --- Side-by-side bars ---
   plot_ly(
     data = df_year,
     x = ~month_lbl,
@@ -75,7 +70,6 @@ make_sector_decomposition_bars <- function(sales_to_customers_monthly,
 make_revenue_quarters_yoy <- function(sales_to_customers_monthly,
                                       metric = "revenue") {
   
-  # --- Normalize ---
   df <- sales_to_customers_monthly %>%
     mutate(
       stateid  = toupper(trimws(as.character(stateid))),
@@ -96,7 +90,6 @@ make_revenue_quarters_yoy <- function(sales_to_customers_monthly,
   
   years <- sort(unique(df$year))
   
-  # --- Colors: años previos en gris, actual en azul ---
   prev_years  <- setdiff(years, current_year)
   n_prev      <- length(prev_years)
   prev_colors <- if (n_prev > 0) {
@@ -108,7 +101,6 @@ make_revenue_quarters_yoy <- function(sales_to_customers_monthly,
   width_map <- stats::setNames(rep(1.5, length(years)), as.character(years))
   width_map[as.character(current_year)] <- 3.5
   
-  # --- Build plot ---
   fig <- plot_ly()
   
   for (yr in years) {
@@ -138,8 +130,6 @@ make_revenue_quarters_yoy <- function(sales_to_customers_monthly,
     )
   }
   
-  # --- Opcional: banda sombreada a partir de Q(last_q_cur + 1) ---
-  # Marca visualmente que esos trimestres del año actual aún no existen.
   next_q <- last_q_cur + 1
   shapes <- if (next_q <= 4) {
     list(

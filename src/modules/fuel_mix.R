@@ -32,7 +32,6 @@ make_fuel_mix <- function(data, tz_salida = "America/Mexico_City"){
       value  = as.numeric(value)
     )
   
-  # Toda la data, sin filtrar por día
   day_data <- df %>%
     group_by(period, `type_name`) %>%
     summarise(total_value = sum(value, na.rm = TRUE), .groups = "drop")

@@ -1,14 +1,13 @@
 library(plotly)
 library(dplyr)
 library(lubridate)
-library(htmlwidgets)   # ← para onRender
+library(htmlwidgets)   
 
 make_us_map <- function(data,
                         frame_inicial = c("ahora", "inicio", "ultimo")) {
   
   frame_inicial <- match.arg(frame_inicial)
   
-  # ---- mapa BA → estados (sin cambios) -----------------------------------
   ba_to_states <- list(
     BHBA = c("SD", "WY", "MT", "NE", "CO"),
     CISO = c("CA", "NV"),
@@ -29,7 +28,6 @@ make_us_map <- function(data,
     rename(state = values, ba = ind) %>%
     mutate(ba = as.character(ba), state = as.character(state))
   
-  # ---- preprocesamiento (sin cambios) ------------------------------------
   data <- data %>%
     mutate(
       datetime = ymd_h(sub("T", " ", period)) %>%
@@ -65,7 +63,6 @@ make_us_map <- function(data,
   
   colorscale <- list(c(0, "blue"), c(0.5, "white"), c(1, "red"))
   
-  # ---- plotly base (sin cambios) -----------------------------------------
   p <- plot_ly(
     data         = state_values_all,
     type         = "choropleth",
@@ -108,7 +105,6 @@ make_us_map <- function(data,
       y = 0, yanchor = "bottom"
     )
   
-  # ---- índice del frame inicial ------------------------------------------
   frame_labels <- sort(unique(state_values_all$frame_label))
   
   target_index <- switch(
@@ -118,11 +114,10 @@ make_us_map <- function(data,
     "ahora"  = {
       ahora <- with_tz(Sys.time(), "America/Mexico_City")
       ts    <- as.POSIXct(frame_labels, tz = "America/Mexico_City")
-      which.min(abs(as.numeric(ts - ahora))) - 1L   # plotly usa índice 0
+      which.min(abs(as.numeric(ts - ahora))) - 1L  
     }
   )
   
-  # ---- saltar al frame inicial después del render ------------------------
   onRender(
     p,
     sprintf(

@@ -28,7 +28,6 @@ create_value_box <- function(summary) {
     change_text <- "No hay cambios con respecto a la hora anterior."
   }
   
-  # Create the value box with dynamic values
   valueBox(
     value = paste0("Demanda de: ",format(round(value, 0), big.mark = ","), " MWh"),
     caption = change_text,
@@ -37,12 +36,11 @@ create_value_box <- function(summary) {
   )
 }
 
-#' Get demand summary with percentage change
 get_mwh_summary <- function(data) {
   
   data <- data %>%
     mutate(
-      datetime = ymd_h(period),  # Parse "2026-09-10T07" correctly
+      datetime = ymd_h(period),  
       value = as.numeric(value)
     )
   
@@ -52,7 +50,7 @@ get_mwh_summary <- function(data) {
       sum = sum(value, na.rm = TRUE),
       count = n()
     ) %>%
-    arrange(desc(datetime))  # Newest to oldest
+    arrange(desc(datetime))  
   
   change <- ((grouped$sum[1] - grouped$sum[2]) / grouped$sum[2]) * 100
   direction <- ifelse(change > 0, "up", ifelse(change < 0, "down", "neutral"))

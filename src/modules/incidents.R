@@ -7,7 +7,6 @@ library(dplyr)
 
 make_incidents_map <- function(df){
     
-# Coerce numeric columns (read.csv may have made them character)
 df <- df %>%
   mutate(
     metersaffected = as.numeric(metersaffected),
@@ -16,10 +15,8 @@ df <- df %>%
   ) %>%
   filter(!is.na(centroid.lon), !is.na(centroid.lat))
 
-# ---- US basemap ----
 us_states <- map_data("state")
 
-# ---- Plot ----
 ggplot() +
   geom_polygon(data = us_states,
                aes(x = long, y = lat, group = group),
@@ -48,9 +45,6 @@ ggplot() +
 
 
 
-# ---------------------------------------------------------------
-# Bar graph: outage status (statuskind)
-# ---------------------------------------------------------------
 make_status_bar_graph <- function(df) {
   
   plot_df <- df %>%
@@ -84,12 +78,8 @@ make_status_bar_graph <- function(df) {
 }
 
 
-# ---------------------------------------------------------------
-# Bar graph: outage causes (causekind with fallback to cause)
-# ---------------------------------------------------------------
 make_causes_bar_graph <- function(df) {
   
-  # Prefer `causekind` (standardised), fall back to `cause` (free text)
   pick_col <- function(x) {
     x <- trimws(as.character(x))
     x[is.na(x) | x == "" | x %in% c("NA", "null", "NULL", "N/A")] <- NA
@@ -111,7 +101,6 @@ make_causes_bar_graph <- function(df) {
              layout(title = "No cause data available"))
   }
   
-  # Truncate very long cause labels so the chart stays readable
   plot_df <- plot_df %>%
     mutate(cause_label = ifelse(nchar(cause) > 40,
                                 paste0(substr(cause, 1, 37), "..."),

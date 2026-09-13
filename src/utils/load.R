@@ -8,7 +8,6 @@ library(jsonlite)
 library(sf)
 library(dplyr)
 
-# Pulling the API key from my renviron file
 
 
 if (file.exists(".env")) {
@@ -29,19 +28,15 @@ list_api_paths <- list("electricity/rto/region-data/data/", #Electric Power Oper
 
 
 
-# Function to fetch and save EIA data
 fetch_and_save_eia_data <- function(path_index, csv_filename) {
-  # Fetch the data
   df <- eia_get(
     api_key = api_key,
     api_path = list_api_paths[[path_index]],
     data = "value"
   )
   
-  # Save to CSV
   write.csv(df, csv_filename, row.names = FALSE)
   
-  # Return the data frame (optional)
   return(df)
 }
 
@@ -71,7 +66,7 @@ response <- GET(
   )
 )
 
-status_code(response)  # Should be 200
+status_code(response)  
 
 parsed <- fromJSON(content(response, "text"))
 
@@ -264,9 +259,6 @@ write.csv(datos, "src/data/hourly_generation_by_energy_source.csv", row.names = 
 
 
 
-# ============================================================
-# PART A — Fetch all records from the ODIN API
-# ============================================================
 
 base_url <- paste0(
   "https://openenergyhub.ornl.gov/api/explore/v2.1/",
@@ -310,11 +302,10 @@ repeat {
   }
   
   offset <- offset + limit
-  Sys.sleep(0.5)   # be polite to the API
+  Sys.sleep(0.5)   
 }
 
 
-# ---- Combine pages ------------------------------------------------------
 if (length(all_records) > 0) {
   final_df <- do.call(rbind, all_records)
 } else {
@@ -323,7 +314,6 @@ if (length(all_records) > 0) {
 }
 
 
-# ---- Fix list columns (nested JSON) -------------------------------------
 list_cols <- names(final_df)[vapply(final_df, is.list, logical(1))]
 
 if (length(list_cols) > 0) {
@@ -347,7 +337,6 @@ if (length(list_cols) > 0) {
 stopifnot(!any(vapply(final_df, is.list, logical(1))))
 
 
-# ---- Write CSV ----------------------------------------------------------
 output_file <- "src/data/odin_real_time_outages_county.csv"
 
 write.csv(final_df, file = output_file, row.names = FALSE, na = "")

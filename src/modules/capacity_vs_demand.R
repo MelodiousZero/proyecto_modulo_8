@@ -7,7 +7,6 @@ capacity_vs_demand <- function(state_generation_capacity,
                                state_demand_df,
                                max_pct = 150) {
   
-  # ---- Precompute once ----
   state_capacity <- state_generation_capacity %>%
     filter(
       energysourceid == "ALL",
@@ -17,7 +16,6 @@ capacity_vs_demand <- function(state_generation_capacity,
   
   state_demand <- make_state_demand_wide(state_demand_df)
   
-  # ---- Calcular pct para TODOS los estados (para encontrar el máximo) ----
   last_hour <- max(state_demand$hour, na.rm = TRUE)
   
   demand_last <- state_demand %>%
@@ -27,7 +25,6 @@ capacity_vs_demand <- function(state_generation_capacity,
   capacity_all <- state_capacity %>%
     mutate(stateId = as.character(stateId))
   
-  # Demanda y capacidad por estado
   demand_by_state <- demand_last %>%
     group_by(state_id) %>%
     summarise(demand = sum(demand, na.rm = TRUE), .groups = "drop")
@@ -46,15 +43,13 @@ capacity_vs_demand <- function(state_generation_capacity,
     ) %>%
     filter(!is.na(pct), !is.na(state_id), nzchar(state_id))
   
-  # El estado con el porcentaje más alto
   top_state <- pct_by_state %>%
     arrange(desc(pct)) %>%
     slice(1) %>%
     pull(state_id)
   
-  if (length(top_state) == 0) top_state <- "US"  # fallback
+  if (length(top_state) == 0) top_state <- "US"  
   
-  # ---- Facets: top_state primero, luego US ----
   speedometer_grid(state_capacity, state_demand,
                    states  = c(top_state, "US"),
                    max_pct = max_pct)
@@ -76,13 +71,11 @@ speedometer_grid <- function(state_capacity, state_demand,
     mutate(stateId = as.character(stateId)) %>%
     filter(stateId != "US")
   
-  # ---- US totals ----
   us_dem <- sum(demand_last$demand, na.rm = TRUE)
   us_cap <- capacity_all %>%
     filter(stateId == "US") %>%
     summarise(capacity = sum(capability, na.rm = TRUE)) %>%
     pull(capacity)  
-  # ---- Filas por estado ----
   per_state <- lapply(states, function(s) {
     if (s == "US") {
       data.frame(state_id = "US", demand = us_dem, capacity = us_cap)
@@ -101,7 +94,6 @@ speedometer_grid <- function(state_capacity, state_demand,
   
   df$state_id <- factor(df$state_id, levels = states)
   
-  # ---- Zonas ----
   zones <- data.frame(
     start = c(0,  60,  90),
     end   = c(60, 90, 150),
@@ -130,7 +122,6 @@ speedometer_grid <- function(state_capacity, state_demand,
   }))
   zone_df$state_id <- factor(zone_df$state_id, levels = states)
   
-  # ---- Agujas ----
   needle_df <- df %>%
     mutate(
       angle = pi * (1 - pct / max_pct),
@@ -138,7 +129,6 @@ speedometer_grid <- function(state_capacity, state_demand,
       yend  = 0.95 * sin(angle)
     )
   
-  # ---- Ticks ----
   tick_pct   <- seq(0, max_pct, by = 30)
   tick_angle <- pi * (1 - tick_pct / max_pct)
   ticks <- data.frame(
@@ -153,7 +143,6 @@ speedometer_grid <- function(state_capacity, state_demand,
   ticks_df <- do.call(rbind, lapply(states, function(s) cbind(ticks, state_id = s)))
   ticks_df$state_id <- factor(ticks_df$state_id, levels = states)
   
-  # ---- Plot ----
   ggplot() +
     geom_polygon(data = zone_df,
                  aes(x = x, y = y, fill = fill, group = zone_id),
@@ -199,9 +188,6 @@ speedometer_grid <- function(state_capacity, state_demand,
 
 
 
-# -------------------------------------------------------------------
-# make_state_demand_wide: SIN CAMBIOS
-# -------------------------------------------------------------------
 make_state_demand_wide <- function(data) {
   
   ba_to_states <- list(

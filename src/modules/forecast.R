@@ -4,14 +4,11 @@ library(lubridate)
 library(scales)
 library(xgboost)
 
-getwd()
 
-# ---- Cargar modelo una sola vez -----------------------------------------
 .ruta_modelos <- "modules/machine_learning/models"
 .xgb_model    <- xgb.load(file.path(.ruta_modelos, "xgb_demand_us48.model"))
 .xgb_features <- readRDS(file.path(.ruta_modelos, "features.rds"))
 
-# ---- Predictor recursivo ------------------------------------------------
 .predecir_1h <- function(datos_hist, tz = "UTC") {
   d <- datos_hist %>% arrange(period)
   prox <- tail(d$period, 1) + hours(1)
@@ -54,7 +51,6 @@ make_forecast <- function(forecast_df,
                           tz_salida    = "America/Mexico_City",
                           marcar_picos = TRUE) {
   
-  # ---- 1) Parseo + limpieza ----------------------------------------------
   df <- forecast_df %>%
     filter(respondent == "US48", type == "D") %>%
     mutate(
@@ -65,10 +61,8 @@ make_forecast <- function(forecast_df,
     arrange(period) %>%
     select(period, demand)
   
-  # ---- 2) Forecast con el modelo XGBoost --------------------------------
   fc_df <- .generar_forecast(df, horizonte = horizonte)
   
-  # ---- 3) Recorte del histórico + conversión a tz local -----------------
   hist_df <- df %>%
     mutate(period = with_tz(period, tz_salida)) %>%
     filter(period >= max(period) - hours(horas_hist))
@@ -76,7 +70,6 @@ make_forecast <- function(forecast_df,
   fc_df <- fc_df %>%
     mutate(period = with_tz(period, tz_salida))
   
-  # Punto de unión para que las líneas se toquen
   punto_union <- hist_df %>% slice_tail(n = 1)
   fc_plot     <- bind_rows(punto_union, fc_df) %>% arrange(period)
   
@@ -84,7 +77,6 @@ make_forecast <- function(forecast_df,
   inicio      <- min(hist_df$period)
   fin         <- max(fc_plot$period)
   
-  # ---- 4) Picos diarios sobre el histórico ------------------------------
   picos <- hist_df %>%
     arrange(period) %>%
     mutate(
@@ -99,7 +91,6 @@ make_forecast <- function(forecast_df,
     ungroup() %>%
     mutate(etiqueta = label_number(scale_cut = cut_short_scale())(demand))
   
-  # ---- 5) Gráfica -------------------------------------------------------
   p <- ggplot() +
     geom_vline(
       xintercept = ultimo_hist,

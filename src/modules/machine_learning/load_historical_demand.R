@@ -15,7 +15,7 @@ if (file.exists(".env")) {
 
 api_key <- Sys.getenv("eia_key")
 
-offsets <- seq(0, 50000, by = 5000)   # 0, 5000, ..., 50000 → 11 páginasdatos <- NULL
+offsets <- seq(0, 50000, by = 5000)
 
 for (off in offsets) {
   

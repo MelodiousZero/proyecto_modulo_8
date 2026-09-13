@@ -53,7 +53,7 @@ params:
 # Introducción
 
 Todo nuestro código se encuentra en el [siguiente repositorio de GitHub](https://github.com/MelodiousZero/proyecto_modulo_8).
-Con el dashboard presentado en la exposición localizado en la [siguiente URL](https://melodiouszero.github.io/proyecto_modulo_8). En el `README.md` del repositorio se explican algunas funcionalidades de como está montado. Como por ejemplo la actualziación de la información de forma automática por medio de GitHub Actions.
+Con el dashboard presentado en la exposición localizado en la [siguiente URL](https://melodiouszero.github.io/proyecto_modulo_8). En el `README.md` del repositorio se explican algunas funcionalidades de como está montado. Como por ejemplo la actualización de la información de forma automática por medio de GitHub Actions.
 
 
 # Problema y contexto
@@ -93,18 +93,26 @@ Descargar por medio de la API de EIA, la demanda histórica para toda la región
 Dado que la demanda para toda la zona contigua de Estados Unidos , conocida como US48 es ciclica, utilizamos como modelo a XGBoost, esto dado nuestras previas experiencias con el buen perfomance de este modelo y tambien debido al carácter no lineal de la demanda. La demanda puede ser influida por factores externos como la composición demográfica de los Estados Unidos, así como condiciones climáticas. Estas características no las pudimos incluir con más bases porque eran o inaccesibles o muy dificiles de incluir en un solo dataset para entrenar y probar. 
 Una regresión lineal no capturaría estos detalles así como no capturaría cosas como días festivos, feriados o cualquier otro evento. 
 
+![XGBoost: forecast vs real (2 semanas de test)](figures/xgb_test_2weeks.pdf){#fig-xgb}
+
+Este fue el desempeño del entrenamiento ML para calcular la demanda eléctrica.
+
 # Principales resultados
+
+- Patrón ciclico en la demanda de electricidad
+- Patrones en la distribución del tipo de energía usada, como por ejemplo luz solar en ciertos horarios
+- Patrón de ventas con dos generadores en particular, el que abastece a Califronia y Texas siendo los más redituables.
 
 
 # Conslusiones
 
-La predicción fue buena
+Con el uso del modelo ML de XGBoost para predecir la demanda mas toda la información de ODIN+EIA, el dashboard logra mostrar de forma visual y efectiva el estado actual del sistema eléctrico de Estados Unidos. Con algunas limitaciones, como veremos a continuación.
 
 # Limitaciones
 
 - La información de apagones proveniente de ODIN es bastante pobre, no tiene mucha información respecto al status o causa de los apagones. 
-- En el caso de EIA, la información que viene es demasiado *descriptiva*, es decir, no tiene información que pudiera servir para un modelaje efectivo. Es más, en alguna de sus rutas de API, ya viene incluido un _forecast_ para predecir demanda. 
+- En el caso de EIA, la información que viene es demasiado *descriptiva*, es decir, no nos ayuda mucho a poder generar un modelo para predecir cosas que no sean demanda o generación eléctrica. Para poder crear un dataset más robusto tendríamos que hacer muchas mezclas con el censo demográfico o condiciones climáticas, pero nos dimos cuenta que era una tarea muy extensa y pesada, dado que todos estos datasets tenían sus detalles de formato. 
 
 # Posibles extensiones
 
-Enriquecer más el proyecto con información de censos.
+Enriquecer más el proyecto con información de censos y condiciones climáticas sería un buen punto de partida para enriquecer más el dashboard.

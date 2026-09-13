@@ -1,6 +1,4 @@
-# ============================================================
-# 0. Librerías
-# ============================================================
+
 library(dplyr)
 library(lubridate)
 library(ggplot2)
@@ -9,9 +7,7 @@ library(vip)
 
 set.seed(42)
 
-# ============================================================
-# 1. Cargar y limpiar
-# ============================================================
+
 datos <- read.csv("src/modules/machine_learning/ml_data/daily_hourly_historic.csv") %>%
   mutate(period = ymd_h(period, tz = "UTC")) %>%
   filter(!is.na(period)) %>%
@@ -22,9 +18,7 @@ cat("Filas:", nrow(datos), "\n")
 cat("Rango:", format(min(datos$period)), "→", format(max(datos$period)), "\n")
 cat("NAs en demand:", sum(is.na(datos$demand)), "\n")
 
-# ============================================================
-# 2. EDA rápido
-# ============================================================
+
 datos %>%
   mutate(hour = hour(period)) %>%
   ggplot(aes(hour, demand, group = hour)) +
@@ -42,9 +36,7 @@ datos %>%
   geom_line(alpha = 0.3) +
   labs(title = "Serie completa US48", y = "MW", x = NULL)
 
-# ============================================================
-# 3. Feature engineering
-# ============================================================
+
 df <- datos %>%
   mutate(
     hour       = hour(period),
@@ -66,9 +58,7 @@ df <- datos %>%
 
 cat("Filas tras features:", nrow(df), "\n")
 
-# ============================================================
-# 4. Split temporal (80/20)
-# ============================================================
+
 cut_point <- floor(0.8 * nrow(df))
 train <- df[1:cut_point, ]
 test  <- df[(cut_point + 1):nrow(df), ]
@@ -77,18 +67,13 @@ cat("Train:", nrow(train), "| Test:", nrow(test), "\n")
 cat("Train hasta:", format(max(train$period)), "\n")
 cat("Test desde: ", format(min(test$period)), "\n")
 
-# ============================================================
-# 5. Baselines
-# ============================================================
 mae_baseline <- mean(abs(test$demand - test$target))          # lag 0
 mae_lag24    <- mean(abs(test$lag_24h - test$target))
 
 cat("Baseline lag_0   MAE:", round(mae_baseline), "MW\n")
 cat("Baseline lag_24h MAE:", round(mae_lag24), "MW\n")
 
-# ============================================================
-# 6. XGBoost
-# ============================================================
+
 features <- c("hour","dow","month","is_weekend",
               "lag_1h","lag_24h","lag_48h","lag_168h",
               "roll_24h","roll_168h")
@@ -123,10 +108,8 @@ cat("Mejora vs baseline lag_0  :",
 cat("Mejora vs baseline lag_24h:",
     round(100 * (1 - mae_xgb / mae_lag24), 1), "%\n")
 
-# ============================================================
-# 7. Visualización
-# ============================================================
-test %>%
+
+p <- test %>%
   mutate(pred = pred_xgb) %>%
   slice_head(n = 24 * 14) %>%
   ggplot(aes(period)) +
@@ -136,7 +119,9 @@ test %>%
        y = "MW", x = NULL, color = NULL) +
   theme_minimal()
 
-# Error por hora
+ggsave("src/figures/xgb_test_2weeks.pdf", p,
+       width = 7, height = 3.2, units = "in", device = cairo_pdf)
+
 test %>%
   mutate(pred  = pred_xgb,
          error = pred - target,
@@ -146,9 +131,7 @@ test %>%
   labs(title = "Error por hora del día", y = "MW", x = "Hora") +
   theme_minimal()
 
-# ============================================================
-# 8. Importancia de features
-# ============================================================
+
 imp <- xgb.importance(feature_names = features, model = xgb)
 print(imp)
 
