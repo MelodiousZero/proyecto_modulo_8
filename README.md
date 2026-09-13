@@ -1,5 +1,5 @@
 #  Demanda y Generación eléctrica en Estados Unidos
-<img width="3497" height="1962" alt="imagen" src="https://github.com/user-attachments/assets/28d944a9-72c2-4f58-b5e3-5933f13e043c" />
+<img width="3747" height="1986" alt="imagen" src="https://github.com/user-attachments/assets/3e874237-b0a2-4909-928e-9c4f47aed02d" />
 
 
 
