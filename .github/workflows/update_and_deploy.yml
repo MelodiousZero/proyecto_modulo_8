@@ -90,6 +90,7 @@ jobs:
             any::ggplot2
             any::here
             any::maps
+            any::xgboost
           cache-version: 1
 
       - name: Render dashboard

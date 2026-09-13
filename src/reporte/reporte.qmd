@@ -53,7 +53,7 @@ params:
 # Introducción
 
 Todo nuestro código se encuentra en el [siguiente repositorio de GitHub](https://github.com/MelodiousZero/proyecto_modulo_8).
-Con el dashboard presentado en la exposición localizado en la [siguiente URL](https://melodiouszero.github.io/proyecto_modulo_8)
+Con el dashboard presentado en la exposición localizado en la [siguiente URL](https://melodiouszero.github.io/proyecto_modulo_8). En el `README.md` del repositorio se explican algunas funcionalidades de como está montado. Como por ejemplo la actualziación de la información de forma automática por medio de GitHub Actions.
 
 
 # Problema y contexto
@@ -78,7 +78,6 @@ Para este proyecto usamos tres fuentes básicamente:
 
 - [EIA](https://www.eia.gov/electricity/data.php): Sus siglas significan U.S Energy Information Administration, de aquí sacamos la mayoría de la información usada por el dashboard. Cosas como demanda de electricidad, capacidad de los generadores, las ventas en millones de dolares que se obtiene por el suministro de electricdad, provienen de este dataset.  
 - [ODIN](https://openenergyhub.ornl.gov/explore/dataset/odin-real-time-outages-county/api/?disjunctive.cause&disjunctive.name&disjunctive.statuskind&disjunctive.state&disjunctive.county): Este es un departamento liderado por Oak Ridge National Laboratory (ORNL) y la Oficina de Electricidad del Departamento de Energía de Estados Unidos (DOE). De esta base sacamos la información pertinente a los apagones que sufre el sistema de electricidad estadounidense. 
-- [Open-Meteo](https://open-meteo.com/): Una API de uso gratuito para información respecto a condiciones metereológicas.
 
 # Alcance
 # Principales decisiones de limpieza
@@ -87,14 +86,19 @@ Para la información proveniente de EIA la limpieza consitió de cambiar el tiem
 
 # Metodología
 
+Descargar por medio de la API de EIA, la demanda histórica para toda la región contigua de Estados Unidos para un periodo de 2021 a 2026. Se tuvieron que hacer 10 llamadas a la API para extraerlo todo. 
+
 # Modelo
 
-inserte modelo aqui 
+Dado que la demanda para toda la zona contigua de Estados Unidos , conocida como US48 es ciclica, utilizamos como modelo a XGBoost, esto dado nuestras previas experiencias con el buen perfomance de este modelo y tambien debido al carácter no lineal de la demanda. La demanda puede ser influida por factores externos como la composición demográfica de los Estados Unidos, así como condiciones climáticas. Estas características no las pudimos incluir con más bases porque eran o inaccesibles o muy dificiles de incluir en un solo dataset para entrenar y probar. 
+Una regresión lineal no capturaría estos detalles así como no capturaría cosas como días festivos, feriados o cualquier otro evento. 
 
 # Principales resultados
 
 
 # Conslusiones
+
+La predicción fue buena
 
 # Limitaciones
 
