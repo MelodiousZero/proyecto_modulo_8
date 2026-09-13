@@ -7,6 +7,18 @@ Este es el repositorio del proyecto final del modulo 8 del Diplomado Introducci�
 Es un dashboard basado en flexdashboard programado en .R en su mayoría. Con el reporte escrito en .qmd. 
 Para acceder al dashboard [entre a la liga](https://melodiouszero.github.io/proyecto_modulo_8)
 
+Los integrantes del equipo de este repositorio son: 
+
+- Raúl Llamosas Alvarado
+- Eumir Rendon Uresti
+- Randy Jesús García Mejía
+- Gabriela Peña Franco
+- Daniela Ibarra Gatica
+- Daniela Vázquez Sánchez
+
+
+
+
 ## Funcionalidades 
 
 ### Carga Automática de datos
