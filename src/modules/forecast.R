@@ -2,80 +2,128 @@ library(ggplot2)
 library(dplyr)
 library(lubridate)
 library(scales)
+library(xgboost)
+
+getwd()
+
+# ---- Cargar modelo una sola vez -----------------------------------------
+.ruta_modelos <- "modules/machine_learning/models"
+.xgb_model    <- xgb.load(file.path(.ruta_modelos, "xgb_demand_us48.model"))
+.xgb_features <- readRDS(file.path(.ruta_modelos, "features.rds"))
+
+# ---- Predictor recursivo ------------------------------------------------
+.predecir_1h <- function(datos_hist, tz = "UTC") {
+  d <- datos_hist %>% arrange(period)
+  prox <- tail(d$period, 1) + hours(1)
+  
+  nuevo <- data.frame(
+    hour       = hour(prox),
+    dow        = wday(prox),
+    month      = month(prox),
+    is_weekend = wday(prox) %in% c(1, 7),
+    lag_1h     = tail(d$demand, 1),
+    lag_24h    = tail(d$demand, 24)[1],
+    lag_48h    = tail(d$demand, 48)[1],
+    lag_168h   = tail(d$demand, 168)[1],
+    roll_24h   = mean(tail(d$demand, 24)),
+    roll_168h  = mean(tail(d$demand, 168))
+  )
+  nuevo <- nuevo[, .xgb_features, drop = FALSE]
+  pred  <- predict(.xgb_model, as.matrix(nuevo))
+  
+  data.frame(period = prox, demand = as.numeric(pred))
+}
+
+.generar_forecast <- function(datos_hist, horizonte = 48) {
+  d <- datos_hist %>% select(period, demand) %>% arrange(period)
+  out <- vector("list", horizonte)
+  for (h in seq_len(horizonte)) {
+    paso <- .predecir_1h(d)
+    out[[h]] <- paso
+    d <- bind_rows(d, paso)
+  }
+  bind_rows(out)
+}
+
+
+
 
 make_forecast <- function(forecast_df,
-                          tz_salida = "America/Mexico_City",
+                          horizonte    = 48,
+                          horas_hist   = 96,
+                          tz_salida    = "America/Mexico_City",
                           marcar_picos = TRUE) {
   
-  # ---- 1) Parseo ----------------------------------------------------------
+  # ---- 1) Parseo + limpieza ----------------------------------------------
   df <- forecast_df %>%
-    filter(respondent == "US48", type %in% c("D", "DF")) %>%
+    filter(respondent == "US48", type == "D") %>%
     mutate(
       period = ymd_h(sub("T", " ", period)) %>%
-        force_tz(tzone = "UTC") %>%
-        with_tz(tzone = tz_salida),
-      value  = as.numeric(value)
+        force_tz(tzone = "UTC"),
+      demand = as.numeric(value)
     ) %>%
-    arrange(period)
+    arrange(period) %>%
+    select(period, demand)
   
-  hist_df <- df %>% filter(type == "D")
-  fc_df   <- df %>% filter(type == "DF")
+  # ---- 2) Forecast con el modelo XGBoost --------------------------------
+  fc_df <- .generar_forecast(df, horizonte = horizonte)
   
-  inicio <- min(df$period, na.rm = TRUE)
-  fin    <- max(df$period, na.rm = TRUE)
+  # ---- 3) Recorte del histórico + conversión a tz local -----------------
+  hist_df <- df %>%
+    mutate(period = with_tz(period, tz_salida)) %>%
+    filter(period >= max(period) - hours(horas_hist))
   
-  ultimo_hist <- if (nrow(hist_df) > 0) max(hist_df$period, na.rm = TRUE) else NA
+  fc_df <- fc_df %>%
+    mutate(period = with_tz(period, tz_salida))
   
-  hist_reciente <- hist_df %>% filter(period >= inicio)
+  # Punto de unión para que las líneas se toquen
+  punto_union <- hist_df %>% slice_tail(n = 1)
+  fc_plot     <- bind_rows(punto_union, fc_df) %>% arrange(period)
   
-  if (!is.na(ultimo_hist)) {
-    punto_union <- hist_reciente %>% slice_tail(n = 1) %>% mutate(type = "DF")
-    fc_df <- bind_rows(punto_union, fc_df) %>% arrange(period)
-  }
+  ultimo_hist <- max(hist_df$period)
+  inicio      <- min(hist_df$period)
+  fin         <- max(fc_plot$period)
   
-  # ---- 2) Detección de picos (máximo local por día) ----------------------
-  picos <- hist_reciente %>%
+  # ---- 4) Picos diarios sobre el histórico ------------------------------
+  picos <- hist_df %>%
     arrange(period) %>%
     mutate(
-      prev   = lag(value),
-      next_v = lead(value),
-      es_pico = !is.na(prev) & !is.na(next_v) & value > prev & value > next_v
+      prev    = lag(demand),
+      next_v  = lead(demand),
+      es_pico = !is.na(prev) & !is.na(next_v) & demand > prev & demand > next_v
     ) %>%
     filter(es_pico) %>%
     mutate(dia = as.Date(period, tz = tz_salida)) %>%
     group_by(dia) %>%
-    slice_max(value, n = 1, with_ties = FALSE) %>%
+    slice_max(demand, n = 1, with_ties = FALSE) %>%
     ungroup() %>%
-    mutate(etiqueta = label_number(scale_cut = cut_short_scale())(value))
+    mutate(etiqueta = label_number(scale_cut = cut_short_scale())(demand))
   
-  # ---- 3) Gráfica ---------------------------------------------------------
+  # ---- 5) Gráfica -------------------------------------------------------
   p <- ggplot() +
     geom_vline(
       xintercept = ultimo_hist,
       linetype   = "dashed", color = "grey40",
-      linewidth  = 0.6, na.rm = TRUE
+      linewidth  = 0.6
     ) +
     geom_line(
-      data = hist_reciente,
-      aes(period, value),
+      data = hist_df, aes(period, demand),
       color = "steelblue", linewidth = 0.8
     ) +
     geom_line(
-      data = fc_df,
-      aes(period, value),
+      data = fc_plot, aes(period, demand),
       color = "orange", linewidth = 0.9, linetype = "dashed"
     )
   
-  # Capa de picos (solo si hay y se pidió)
   if (marcar_picos && nrow(picos) > 0) {
     p <- p +
       geom_point(
-        data = picos, aes(period, value),
+        data = picos, aes(period, demand),
         color = "steelblue", size = 2.2, shape = 21,
         fill = "white", stroke = 1
       ) +
       geom_text(
-        data = picos, aes(period, value, label = etiqueta),
+        data = picos, aes(period, demand, label = etiqueta),
         vjust = -1.3, size = 3, color = "grey25", fontface = "bold"
       )
   }
@@ -89,17 +137,18 @@ make_forecast <- function(forecast_df,
     ) +
     scale_y_continuous(
       labels = comma,
-      expand = expansion(mult = c(0.05, 0.12))   # aire arriba para etiquetas
+      expand = expansion(mult = c(0.05, 0.12))
     ) +
     labs(
       title    = "Demanda eléctrica US48",
       subtitle = sprintf(
-        "Histórico (D) + Pronóstico day-ahead (DF) — %s a %s (hora CDMX)",
+        "Histórico + Forecast (%dh) — %s a %s (hora CDMX)",
+        horizonte,
         format(inicio, "%d-%b %Hh"),
         format(fin,    "%d-%b %Hh")
       ),
       x = NULL, y = "Demanda (MWh)",
-      caption = "🔵 Histórico (D)      🟠 Pronóstico (DF)      ┆ último dato D      ● Pico diario"
+      caption = "🔵 Histórico      🟠 Forecast XGBoost      ┆ último dato      ● Pico diario"
     ) +
     theme_minimal(base_size = 12) +
     theme(
