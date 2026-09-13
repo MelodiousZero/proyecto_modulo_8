@@ -91,6 +91,9 @@ jobs:
             any::here
             any::maps
             any::xgboost
+            any::remotes
+          extra-packages: |
+            github::tpisel/openmeteo
           cache-version: 1
 
       - name: Render dashboard

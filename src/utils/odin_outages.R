@@ -8,9 +8,7 @@ library(maps)
 library(dplyr)
 
 
-# ============================================================
-# PART A — Fetch all records from the ODIN API
-# ============================================================
+
 
 base_url <- paste0(
   "https://openenergyhub.ornl.gov/api/explore/v2.1/",
@@ -54,11 +52,10 @@ repeat {
   }
   
   offset <- offset + limit
-  Sys.sleep(0.5)   # be polite to the API
+  Sys.sleep(0.5)  
 }
 
 
-# ---- Combine pages ------------------------------------------------------
 if (length(all_records) > 0) {
   final_df <- do.call(rbind, all_records)
 } else {
@@ -67,7 +64,6 @@ if (length(all_records) > 0) {
 }
 
 
-# ---- Fix list columns (nested JSON) -------------------------------------
 list_cols <- names(final_df)[vapply(final_df, is.list, logical(1))]
 
 if (length(list_cols) > 0) {
@@ -91,7 +87,6 @@ if (length(list_cols) > 0) {
 stopifnot(!any(vapply(final_df, is.list, logical(1))))
 
 
-# ---- Write CSV ----------------------------------------------------------
 output_file <- "src/data/odin_real_time_outages_county.csv"
 
 write.csv(final_df, file = output_file, row.names = FALSE, na = "")
