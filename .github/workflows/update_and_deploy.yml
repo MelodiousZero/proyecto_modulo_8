@@ -92,6 +92,7 @@ jobs:
             any::maps
             any::xgboost
             any::remotes
+            any::tidyverse
           extra-packages: |
             github::tpisel/openmeteo
           cache-version: 1
