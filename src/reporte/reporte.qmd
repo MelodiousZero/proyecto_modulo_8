@@ -78,11 +78,14 @@ Para este proyecto usamos tres fuentes básicamente:
 
 - [EIA](https://www.eia.gov/electricity/data.php): Sus siglas significan U.S Energy Information Administration, de aquí sacamos la mayoría de la información usada por el dashboard. Cosas como demanda de electricidad, capacidad de los generadores, las ventas en millones de dolares que se obtiene por el suministro de electricdad, provienen de este dataset.  
 - [ODIN](https://openenergyhub.ornl.gov/explore/dataset/odin-real-time-outages-county/api/?disjunctive.cause&disjunctive.name&disjunctive.statuskind&disjunctive.state&disjunctive.county): Este es un departamento liderado por Oak Ridge National Laboratory (ORNL) y la Oficina de Electricidad del Departamento de Energía de Estados Unidos (DOE). De esta base sacamos la información pertinente a los apagones que sufre el sistema de electricidad estadounidense. 
+- [Open-Meteo](https://open-meteo.com/en/docs): Usamos Open-Meteo para conseguir información metereológica y poder predecir de cierta manera la generación eléctrica usando energías renovables.
 
 # Alcance
+Para la Demanda, el alcance es nacional. No quisimos hacerlo muy granular porque se volvía más dificil. Lo mismo para las ventas. Caso contrario, para la predicción de generación eléctrica con energía renovables, como las condiciones climáticas afectan de forma regional, optamos por tener un alcance de una sola área metropolitana, San Diego. Que se encuentra en California, justo en la frontera con Tijuana, Baja California.
+
 # Principales decisiones de limpieza
 
-Para la información proveniente de EIA la limpieza consitió de cambiar el tiempo UTC al horario central que es el que se usa en la Ciudad de México. 
+Para la información proveniente de EIA la limpieza consitió de cambiar el tiempo UTC al horario central que es el que se usa en la Ciudad de México. Esto nos sirvió para hacerlo homogeneo y hacer un merge entre los datos de la EIA con los de Open-Meteo.
 
 # Metodología
 
@@ -96,6 +99,14 @@ Una regresión lineal no capturaría estos detalles así como no capturaría cos
 ![XGBoost: forecast vs real (2 semanas de test)](figures/xgb_test_2weeks.pdf){#fig-xgb}
 
 Este fue el desempeño del entrenamiento ML para calcular la demanda eléctrica.
+De igual manera, usamos XGBoost para predecir la generación eléctrica por tipo de energía renovable. Hicimos un modelo por energía renovable para no tener un modelo "every size fits all". Por lo que tenemos 4 modelos:
+
+- xgb_GEO.model
+- xgb_SUN.model
+- xgb_WAT.model
+- xgb_WIND.model
+
+Cada uno tiene sus features que sacamos de Open-Meteo, por ejemplo para el de generación por medio de energía solar usamos cosas que fueran relevantes como lo son si el día es soleado o nublado, etc. Lo mismo para el resto de modelos, para el de WIND la velocidad del viento. Etc.
 
 # Principales resultados
 
@@ -112,6 +123,7 @@ Con el uso del modelo ML de XGBoost para predecir la demanda mas toda la informa
 
 - La información de apagones proveniente de ODIN es bastante pobre, no tiene mucha información respecto al status o causa de los apagones. 
 - En el caso de EIA, la información que viene es demasiado *descriptiva*, es decir, no nos ayuda mucho a poder generar un modelo para predecir cosas que no sean demanda o generación eléctrica. Para poder crear un dataset más robusto tendríamos que hacer muchas mezclas con el censo demográfico o condiciones climáticas, pero nos dimos cuenta que era una tarea muy extensa y pesada, dado que todos estos datasets tenían sus detalles de formato. 
+- La información de Open-Meteo es por ciudad, pero la información de generación eléctrica es por generador, lo cual no siempre es descriptivo ya que un generador puede abastecer a multiples ciudades o regiones enteras. Notamos que esto afectó nuestra capacidad de predecir la generación eléctrica con energías renovables. 
 
 # Posibles extensiones
 
