@@ -1,5 +1,5 @@
 ---
-title: "Proyecto final modulo 8."
+title: "Demanda y generación eléctrica en Estados Unidos ⚡"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -7,7 +7,34 @@ output:
 runtime: shiny
 ---
 
+```{css, echo=FALSE}
+/* Colores de Static Shock la caricatura de Cartoon Network!  */
 
+.navbar {
+  background-color: #0A2A4A !important;   
+  border-bottom: 3px solid #FFD700;        
+}
+
+.navbar-brand, 
+.navbar-nav > li > a {
+  color: #FFD700 !important;              
+  font-weight: 600;
+}
+
+.navbar-nav > li > a:hover,
+.navbar-nav > li > a:focus {
+  color: #FFF176 !important;
+  background-color: #0D3A63 !important;
+}
+
+.navbar-nav > .active > a,
+.navbar-nav > .active > a:hover,
+.navbar-nav > .active > a:focus {
+  background-color: #061A2E !important;    
+  color: #FFD700 !important;
+  font-weight: 700;
+}
+```
 
 
 
@@ -33,6 +60,7 @@ source("modules/bar_graphs_sales.R")
 source("modules/incidents.R")
 source("modules/value_boxes_outages.R")
 source("modules/prediction_renewable.R")
+source("modules/fuel_mix_historic_per_day.R")
 
 data <- read.csv("data/hourly_demand_subregion.csv", stringsAsFactors = FALSE)
 data_generation_by_energy_source <- read.csv("data/hourly_generation_by_energy_source.csv", stringsAsFactors = FALSE)
@@ -41,6 +69,7 @@ daily_hour_demand <- read.csv("data/daily_hourly_all.csv",stringsAsFactors=FALSE
 sales_monthly <- read.csv("data/sales_to_customers_monthly.csv",stringsAsFactors=FALSE)
 sales_quarterly <- read.csv("data/sales_to_customers_quarterly.csv",stringsAsFactors=FALSE)
 indicents_df <- read.csv("data/odin_real_time_outages_county.csv",stringsAsFactors = FALSE)
+fuel_mix_historico <- read.csv("modules/machine_learning/ml_data/daily_hourly_historic_energy_source.csv",stringsAsFactors = FALSE)
 
 ```
 
@@ -208,32 +237,96 @@ make_causes_bar_graph(indicents_df)
 ```
 
 
-Renovables {data-orientation=rows}
+Renovables {}
 ===============================
 
 
 
-Row {data-height=50}
+
+Column {data-width=300}
 -----------------------------------------------------------------------
+
+
+###
+
+```{r}
+valueBox(
+    value    = paste0("Buen día para renovables"),
+    icon     = "fa-thumbs-up",
+    color    = "success"
+  )
+
+```
 
 ### 
 
-san diego buen dia
 
 ```{r}
+knitr::include_graphics("resources/satellite/san_diego_buen_dia_11_09_2026.png")
 ```
 
 
 ###
 
-san diego mal dia
 ```{r}
+make_fuel_mix_per_day(fuel_mix_historico,"2026-09-11")
+
 ```
 
 
 
-Row {data-height=50}
+
+Column {data-width=300}
 -----------------------------------------------------------------------
+
+
+###
+
+```{r}
+valueBox(
+    value    = paste0("Mal día para renovables"),
+    icon     = "fa-thumbs-down",
+    color    = "danger"
+  )
+
+```
+
+
+
+
+###
+
+```{r}
+knitr::include_graphics("resources/satellite/san_diego_mal_dia_07_11_2019.png")
+```
+
+
+
+
+
+###
+
+```{r}
+make_fuel_mix_per_day(fuel_mix_historico,"2019-11-07")
+
+```
+
+
+Column {data-width=300}
+-----------------------------------------------------------------------
+
+###
+
+```{r}
+valueBox(
+    value    = paste0("Predicción siguientes días"),
+    color    = "info"
+  )
+
+```
+
+
+
 
 ### 
 
