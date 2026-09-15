@@ -40,48 +40,45 @@ format:
 self-contained: true
 toc: true
 toc-depth: 2
-jupyter: python3
 engine: knitr
 knitr:
   opts_chunk:
-    echo: false
-params:
-  python_path: "~/Documentos/espacio_trabajo_intro_analisis_dat2/proyecto_modulo_6/.ambiente_virtual_p6/bin/python"
+    echo: true
 ---
-
 
 # Introducción
 
-Todo nuestro código se encuentra en el [siguiente repositorio de GitHub](https://github.com/MelodiousZero/proyecto_modulo_8).
-Con el dashboard presentado en la exposición localizado en la [siguiente URL](https://melodiouszero.github.io/proyecto_modulo_8). En el `README.md` del repositorio se explican algunas funcionalidades de como está montado. Como por ejemplo la actualización de la información de forma automática por medio de GitHub Actions.
-
+Todo nuestro código se encuentra en el [siguiente repositorio de GitHub](https://github.com/MelodiousZero/proyecto_modulo_8). Con el dashboard presentado en la exposición localizado en la [siguiente URL](https://melodiouszero.github.io/proyecto_modulo_8). En el `README.md` del repositorio se explican algunas funcionalidades de como está montado. Como por ejemplo la actualización de la información de forma automática por medio de GitHub Actions.
 
 # Problema y contexto
 
-El sistema eléctrico de Estados Unidos tiene una demanda que cambia por hora, día, semana y estación. También es influida por clima actividad humana y características regionales. Sufre de apagones. Y tiene picos de demanda. 
+El sistema eléctrico de Estados Unidos tiene una demanda que cambia por hora, día, semana y estación. También es influida por clima actividad humana y características regionales. Sufre de apagones. Y tiene picos de demanda.
 
 # Pregunta principal
 
-Como tal no elegimos una pregunta principal, intentamos contestar de manera visual las siguientes: 
+Como tal no elegimos una pregunta principal, intentamos contestar de manera visual las siguientes:
 
-- ¿Es posible anticipar los periodos de máxima demanda?
-- ¿Qué variables explican los picos de consumo?
-- ¿Cómo cambia el mix de generación durante el día?
-- ¿En qué condiciones aumenta la participación de fuentes renovables?
-- ¿Qué regiones presentan comportamientos similares?
+-   ¿Es posible anticipar los periodos de máxima demanda?
+-   ¿Qué variables explican los picos de consumo?
+-   ¿Cómo cambia el mix de generación durante el día?
+-   ¿En qué condiciones aumenta la participación de fuentes renovables?
+-   ¿Qué regiones presentan comportamientos similares?
 
-Pero en el uso del modelado contestamos las referentes a las condiciones metereológicas y su peso en la demanda eléctrica.
+Pero en el uso del modelado contestamos las referentes a las condiciones metereológicas y su peso en la demanda eléctrica. Intentamos también predecir la generación eléctrica por medio de energías renovables usando otro modelo.
 
 # Datos y procedencia
 
-Para este proyecto usamos tres fuentes básicamente:
+Para este proyecto usamos tres fuentes:
 
-- [EIA](https://www.eia.gov/electricity/data.php): Sus siglas significan U.S Energy Information Administration, de aquí sacamos la mayoría de la información usada por el dashboard. Cosas como demanda de electricidad, capacidad de los generadores, las ventas en millones de dolares que se obtiene por el suministro de electricdad, provienen de este dataset.  
-- [ODIN](https://openenergyhub.ornl.gov/explore/dataset/odin-real-time-outages-county/api/?disjunctive.cause&disjunctive.name&disjunctive.statuskind&disjunctive.state&disjunctive.county): Este es un departamento liderado por Oak Ridge National Laboratory (ORNL) y la Oficina de Electricidad del Departamento de Energía de Estados Unidos (DOE). De esta base sacamos la información pertinente a los apagones que sufre el sistema de electricidad estadounidense. 
-- [Open-Meteo](https://open-meteo.com/en/docs): Usamos Open-Meteo para conseguir información metereológica y poder predecir de cierta manera la generación eléctrica usando energías renovables.
+-   [EIA](https://www.eia.gov/electricity/data.php): Sus siglas significan U.S Energy Information Administration, de aquí sacamos la mayoría de la información usada por el dashboard. Cosas como demanda de electricidad, capacidad de los generadores, las ventas en millones de dolares que se obtiene por el suministro de electricdad, provienen de este dataset.\
+-   [ODIN](https://openenergyhub.ornl.gov/explore/dataset/odin-real-time-outages-county/api/?disjunctive.cause&disjunctive.name&disjunctive.statuskind&disjunctive.state&disjunctive.county): Este es un departamento liderado por Oak Ridge National Laboratory (ORNL) y la Oficina de Electricidad del Departamento de Energía de Estados Unidos (DOE). De esta base sacamos la información pertinente a los apagones que sufre el sistema de electricidad estadounidense así como sus causas y estatus actual de solución. \
+-   [Open-Meteo](https://open-meteo.com/en/docs): Usamos Open-Meteo para conseguir información metereológica y poder predecir de cierta manera la generación eléctrica usando energías renovables.
 
 # Alcance
-Para la Demanda, el alcance es nacional. No quisimos hacerlo muy granular porque se volvía más dificil. Lo mismo para las ventas. Caso contrario, para la predicción de generación eléctrica con energía renovables, como las condiciones climáticas afectan de forma regional, optamos por tener un alcance de una sola área metropolitana, San Diego. Que se encuentra en California, justo en la frontera con Tijuana, Baja California.
+
+Para los análisis de demanda y de ventas, el alcance es nacional. Decidimos no proceder con un análisis muy granular porque saturaría el dashboard de información. Por lo que decidimos mantener las primeras tres pestañas con un alcance nacional. 
+
+Por el otro lado,  para la predicción de generación eléctrica con energía renovables,dado que las condiciones climáticas afectan de forma regional, optamos por tener un alcance de una sola área metropolitana, San Diego, California, justo en la frontera con Tijuana, Baja California en México.
 
 # Principales decisiones de limpieza
 
@@ -89,31 +86,119 @@ Para la información proveniente de EIA la limpieza consitió de cambiar el tiem
 
 # Metodología
 
-Descargar por medio de la API de EIA, la demanda histórica para toda la región contigua de Estados Unidos para un periodo de 2021 a 2026. Se tuvieron que hacer 10 llamadas a la API para extraerlo todo. 
 
-# Modelo
+**Predicción de la demanda de electricidad**
 
-Dado que la demanda para toda la zona contigua de Estados Unidos , conocida como US48 es ciclica, utilizamos como modelo a XGBoost, esto dado nuestras previas experiencias con el buen perfomance de este modelo y tambien debido al carácter no lineal de la demanda. La demanda puede ser influida por factores externos como la composición demográfica de los Estados Unidos, así como condiciones climáticas. Estas características no las pudimos incluir con más bases porque eran o inaccesibles o muy dificiles de incluir en un solo dataset para entrenar y probar. 
-Una regresión lineal no capturaría estos detalles así como no capturaría cosas como días festivos, feriados o cualquier otro evento. 
+Primero descargamos por medio de la API de EIA, la demanda histórica para toda la región contigua de Estados Unidos para un periodo de 2021 a 2026. Se tuvieron que hacer 10 llamadas a la API para extraerlo todo. Después, modificar la data histórica para separar la fecha en hora,día,mes y una variable categórica para saber si es o no fin de semana. También se incluyeron variables de "lag" porque la demanda puede venir con retraso. Lo hicimos de la siguiente manera.
+
+```{r}
+#| eval: false
+df <- datos %>%
+  mutate(
+    hour       = hour(period),
+    dow        = wday(period),            # 1 = domingo
+    month      = month(period),
+    is_weekend = dow %in% c(1, 7),
+    
+    lag_1h     = lag(demand, 1),
+    lag_24h    = lag(demand, 24),
+    lag_48h    = lag(demand, 48),
+    lag_168h   = lag(demand, 168),
+    
+    roll_24h   = zoo::rollmeanr(demand, 24,  fill = NA),
+    roll_168h  = zoo::rollmeanr(demand, 168, fill = NA),
+    
+    target     = lead(demand, 1)          # predecir próxima hora
+  ) %>%
+  na.omit()
+```
+
+**Predicción de la generación de energía eléctrica por medio de energías renovables**
+
+Para crear nuestro dataset lo que hicimos fue descargar la información de la EIA para la generación dividida por tipo de combustible por hora para un periodo extenso de 4 años aproximadamente. Después, usamos la API de Open-Meteo para descargar la información metereológica de San Diego en el mismo periodo. Ambos periodos fueron por hora entonces logramos estandarizarlos en UTC y después hacerles 
+*inner join*.
+
+Modificamos el dataset antes mencionado para incluir variables ciclicas y modificamos el de la hora para incluir dicha información cíclica. Hicimos la misma transformación para las variables de la dirección del viento. 
+```{r}
+#| eval: false
+df <- df %>%
+  filter(!is.na(generation), generation > 0) %>%
+  mutate(
+    period_utc = ymd_hms(period_utc, tz = "UTC"),
+    hour_pt    = hour(with_tz(period_utc, "America/Los_Angeles")),
+    dow        = wday(period_utc, week_start = 1),
+    month      = month(period_utc),
+    doy        = yday(period_utc),
+    hour_sin   = sin(2 * pi * hour_pt / 24),
+    hour_cos   = cos(2 * pi * hour_pt / 24),
+    doy_sin    = sin(2 * pi * doy / 365),
+    doy_cos    = cos(2 * pi * doy / 365),
+    wdir80_sin = sin(2 * pi * wind_direction_80m / 360),
+    wdir80_cos = cos(2 * pi * wind_direction_80m / 360),
+    wind_cubed_80m = wind_speed_80m^3
+  ) %>%
+  arrange(period_utc)
+```
+
+
+Para este modelaje en particular, decidimos dividirlo por tipo de energía para no sobre saturar el modelo y no asumir que uno solo podría predecir los tipos distintos de energía .
+
+
+```{r}
+#| eval: false
+features <- list(
+  SUN = c("shortwave_radiation", "direct_normal_irradiance",
+          "diffuse_radiation", "cloud_cover", "cloud_cover_low",
+          "cloud_cover_mid", "temperature_2m",
+          "hour_sin", "hour_cos", "doy_sin", "doy_cos"),
+  SNB = c("shortwave_radiation", "direct_normal_irradiance",
+          "cloud_cover", "cloud_cover_low", "temperature_2m",
+          "hour_sin", "hour_cos", "doy_sin", "doy_cos"),
+  WND = c("wind_speed_80m", "wind_speed_120m", "wind_cubed_80m",
+          "wdir80_sin", "wdir80_cos", "wind_gusts_10m",
+          "temperature_80m", "surface_pressure",
+          "hour_sin", "hour_cos", "doy_sin", "doy_cos"),
+  WAT = c("precipitation", "temperature_2m", "snow_depth",
+          "et0_fao_evapotranspiration",
+          "hour_sin", "hour_cos", "doy_sin", "doy_cos"),
+  GEO = c("temperature_2m", "hour_sin", "hour_cos",
+          "doy_sin", "doy_cos")
+)
+```
+
+Cada modelo tendría así las features que arriba se presentan. Y se guardan en el repositorio como modelos individuales.
+
+# Modelos
+
+**Predicción de la demanda de electricidad**
+
+
+Dado que la demanda para toda la zona contigua de Estados Unidos , conocida como US48 es ciclica, utilizamos como modelo a XGBoost, esto dado nuestras previas experiencias con el buen perfomance de este modelo y tambien debido al carácter no lineal de la demanda. La demanda puede ser influida por factores externos como la composición demográfica de los Estados Unidos, así como condiciones climáticas. Una regresión lineal no capturaría estos detalles así como no capturaría cosas como días festivos, feriados o cualquier otro evento.
 
 ![XGBoost: forecast vs real (2 semanas de test)](figures/xgb_test_2weeks.pdf){#fig-xgb}
 
+
+
 Este fue el desempeño del entrenamiento ML para calcular la demanda eléctrica.
+
+
+**Predicción de la generación de energía eléctrica por medio de energías renovables**
+
 De igual manera, usamos XGBoost para predecir la generación eléctrica por tipo de energía renovable. Hicimos un modelo por energía renovable para no tener un modelo "every size fits all". Por lo que tenemos 4 modelos:
 
-- xgb_GEO.model
-- xgb_SUN.model
-- xgb_WAT.model
-- xgb_WIND.model
+
+-   `xgb_GEO.model`
+-   `xgb_SUN.model`
+-   `xgb_WAT.model`
+-   `xgb_WIND.model`
 
 Cada uno tiene sus features que sacamos de Open-Meteo, por ejemplo para el de generación por medio de energía solar usamos cosas que fueran relevantes como lo son si el día es soleado o nublado, etc. Lo mismo para el resto de modelos, para el de WIND la velocidad del viento. Etc.
 
 # Principales resultados
 
-- Patrón ciclico en la demanda de electricidad
-- Patrones en la distribución del tipo de energía usada, como por ejemplo luz solar en ciertos horarios
-- Patrón de ventas con dos generadores en particular, el que abastece a Califronia y Texas siendo los más redituables.
-
+-   Patrón ciclico en la demanda de electricidad
+-   Patrones en la distribución del tipo de energía usada, como por ejemplo luz solar en ciertos horarios
+-   Patrón de ventas con dos generadores en particular, el que abastece a Califronia y Texas siendo los más redituables.
 
 # Conslusiones
 
@@ -121,10 +206,10 @@ Con el uso del modelo ML de XGBoost para predecir la demanda mas toda la informa
 
 # Limitaciones
 
-- La información de apagones proveniente de ODIN es bastante pobre, no tiene mucha información respecto al status o causa de los apagones. 
-- En el caso de EIA, la información que viene es demasiado *descriptiva*, es decir, no nos ayuda mucho a poder generar un modelo para predecir cosas que no sean demanda o generación eléctrica. Para poder crear un dataset más robusto tendríamos que hacer muchas mezclas con el censo demográfico o condiciones climáticas, pero nos dimos cuenta que era una tarea muy extensa y pesada, dado que todos estos datasets tenían sus detalles de formato. 
-- La información de Open-Meteo es por ciudad, pero la información de generación eléctrica es por generador, lo cual no siempre es descriptivo ya que un generador puede abastecer a multiples ciudades o regiones enteras. Notamos que esto afectó nuestra capacidad de predecir la generación eléctrica con energías renovables. 
+-   La información de apagones proveniente de ODIN es bastante pobre, no tiene mucha información respecto al status o causa de los apagones.
+-   En el caso de EIA, la información que viene es demasiado *descriptiva*, es decir, no nos ayuda mucho a poder generar un modelo para predecir cosas que no sean demanda o generación eléctrica. Para poder crear un dataset más robusto tendríamos que hacer muchas mezclas con el censo demográfico o condiciones climáticas, pero nos dimos cuenta que era una tarea muy extensa y pesada, dado que todos estos datasets tenían sus detalles de formato.
+-   La información de Open-Meteo es por ciudad, pero la información de generación eléctrica es por generador, lo cual no siempre es descriptivo ya que un generador puede abastecer a multiples ciudades o regiones enteras. Notamos que esto afectó nuestra capacidad de predecir la generación eléctrica con energías renovables.
 
 # Posibles extensiones
 
-Enriquecer más el proyecto con información de censos y condiciones climáticas sería un buen punto de partida para enriquecer más el dashboard.
+Enriquecer los modelos, la información o visualización con los datasets demográficos de Estados Unidos enriquecería bastante los análisis y los modelos de predicción.
