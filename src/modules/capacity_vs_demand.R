@@ -190,6 +190,108 @@ speedometer_grid <- function(state_capacity, state_demand,
 
 make_state_demand_wide <- function(data) {
   
+  subba_to_states <- list(
+    # CISO
+    "PGAE" = c("CA"),
+    "SCE"  = c("CA"),
+    "SDGE" = c("CA"),
+    "VEA"  = c("NV", "CA"),
+    
+    # PNM
+    "ACMA" = c("NM"),
+    "CYGA" = c("NM"),
+    "Frep" = c("NM"),
+    "Jica" = c("NM"),
+    "KAFB" = c("NM"),
+    "KCEC" = c("NM"),
+    "LAC"  = c("NM"),
+    "PNM"  = c("NM"),
+    "TSGT" = c("CO", "NE", "NM", "WY"),
+    
+    # BHBA
+    "BASI" = c("ND", "SD", "MT", "WY", "NE", "CO", "IA", "MN"),
+    "SDE"  = c("SD"),
+    "WYE"  = c("WY"),
+    
+    # MISO
+    "0001" = c("IN"),
+    "0004" = c("WI"),
+    "0006" = c("MO"),
+    "0027" = c("MN", "ND", "SD", "MT", "AR"),
+    "0035" = c("IA", "IL"),
+    "8910" = c("LA", "TX", "MS"),
+    
+    # SWPP
+    "CSWS" = c("OK", "AR", "LA", "TX"),
+    "EDE"  = c("MO", "KS", "OK", "AR"),
+    "GRDA" = c("OK"),
+    "INDN" = c("MO"),
+    "KACY" = c("KS"),
+    "KCPL" = c("MO", "KS"),
+    "LES"  = c("NE"),
+    "MPS"  = c("MO"),
+    "NPPD" = c("NE"),
+    "OKGE" = c("OK", "AR"),
+    "OPPD" = c("NE"),
+    "SECI" = c("KS"),
+    "SPRM" = c("MO"),
+    "SPS"  = c("TX", "NM", "OK", "KS"),
+    "WAUE" = c("ND", "SD", "MT"),
+    "WFEC" = c("OK", "TX"),
+    "WR"   = c("KS"),
+    
+    # SWPW
+    "PRPA" = c("CO"),
+    "WACM" = c("CO", "MT", "WY", "NE", "KS", "NM"),
+    "WAUW" = c("MT", "ND", "SD", "WY"),
+    
+    # ERCO
+    "COAS" = c("TX"),
+    "EAST" = c("TX"),
+    "FWES" = c("TX"),
+    "NCEN" = c("TX"),
+    "NRTH" = c("TX"),
+    "SCEN" = c("TX"),
+    "SOUT" = c("TX"),
+    "WEST" = c("TX"),
+    
+    # NYIS
+    "ZONA" = c("NY"),
+    "ZONB" = c("NY"),
+    "ZONC" = c("NY"),
+    "ZOND" = c("NY"),
+    "ZONE" = c("NY"),
+    "ZONF" = c("NY"),
+    "ZONG" = c("NY"),
+    "ZONH" = c("NY"),
+    "ZONI" = c("NY"),
+    "ZONJ" = c("NY"),
+    "ZONK" = c("NY"),
+    
+    # PJM
+    "AE"   = c("NJ"),
+    "AEP"  = c("OH", "IN", "MI", "WV", "VA", "KY", "TN"),
+    "AP"   = c("PA", "WV", "MD", "VA"),
+    "ATSI" = c("OH", "PA", "WV", "MD"),
+    "BC"   = c("MD"),
+    "CE"   = c("IL"),
+    "DAY"  = c("OH"),
+    "DEOK" = c("OH", "KY"),
+    "DOM"  = c("VA", "NC"),
+    "DPL"  = c("DE", "MD", "VA"),
+    "DUQ"  = c("PA"),
+    "EKPC" = c("KY"),
+    "JC"   = c("NJ"),
+    "ME"   = c("PA"),
+    "PE"   = c("PA"),
+    "PEP"  = c("DC", "MD"),
+    "PL"   = c("PA"),
+    "PN"   = c("PA"),
+    "PS"   = c("NJ"),
+    "RECO" = c("NJ")
+  )
+  
+  
   ba_to_states <- list(
     BHBA = c("SD", "WY", "MT", "NE", "CO"),
     CISO = c("CA", "NV"),
@@ -206,14 +308,14 @@ make_state_demand_wide <- function(data) {
     SWPW = c("KS", "CO", "NE", "NM", "TX", "OK")
   )
   
-  ba_map <- tibble::enframe(ba_to_states, name = "parent", value = "state_id") %>%
+  ba_map <- tibble::enframe(subba_to_states, name = "subba", value = "state_id") %>%
     unnest(state_id)
   
   demand_by_state <- data %>%
-    group_by(hour = period, parent) %>%
+    group_by(hour = period, subba) %>%
     summarise(demand = sum(value, na.rm = TRUE), .groups = "drop") %>%
-    left_join(ba_map, by = "parent") %>%
-    group_by(hour, parent) %>%
+    left_join(ba_map, by = "subba") %>%
+    group_by(hour, subba) %>%
     mutate(demand = demand / n()) %>%
     ungroup() %>%
     group_by(hour, state_id) %>%
