@@ -9,38 +9,24 @@ make_prediction_renewables <- function(data_generation_by_energy_source,
                                        model_dir = "modules/machine_learning/models",
                                        forecast_days = 3,
                                        past_days = 4) {
-  
- 
+
   RENEWABLE_FUELS <- c("GEO", "SNB", "SUN", "WAT", "WND")
-  
+
   FUEL_LABELS <- c(
     SUN = "Solar", SNB = "Solar + Battery", WND = "Wind",
     WAT = "Hydro", GEO = "Geothermal"
   )
-  
-  FEATURES <- list(
-    SUN = c("shortwave_radiation", "direct_normal_irradiance",
-            "diffuse_radiation", "cloud_cover", "cloud_cover_low",
-            "cloud_cover_mid", "temperature_2m",
-            "hour_sin", "hour_cos", "doy_sin", "doy_cos"),
-    SNB = c("shortwave_radiation", "direct_normal_irradiance",
-            "cloud_cover", "cloud_cover_low", "temperature_2m",
-            "hour_sin", "hour_cos", "doy_sin", "doy_cos"),
-    WND = c("wind_speed_80m", "wind_speed_120m", "wind_cubed_80m",
-            "wdir80_sin", "wdir80_cos", "wind_gusts_10m",
-            "temperature_80m", "surface_pressure",
-            "hour_sin", "hour_cos", "doy_sin", "doy_cos"),
-    WAT = c("precipitation", "temperature_2m", "snow_depth",
-            "et0_fao_evapotranspiration",
-            "hour_sin", "hour_cos", "doy_sin", "doy_cos"),
-    GEO = c("temperature_2m", "hour_sin", "hour_cos", "doy_sin", "doy_cos")
-  )
-  
-  
+
+  # [ELIMINADO] La lista FEATURES hardcodeada ya no está aquí.
+  # Ahora se lee desde xgb_<FUEL>_features.rds en model_dir.
+
+  # ============================================================
+  # 1. Fetch recent + forecast weather
+  # ============================================================
   today      <- Sys.Date()
   start_date <- today - past_days
   end_date   <- today + forecast_days
-  
+
   HOURLY_VARS <- c(
     "shortwave_radiation", "direct_radiation", "diffuse_radiation",
     "direct_normal_irradiance", "global_tilted_irradiance",
@@ -58,7 +44,7 @@ make_prediction_renewables <- function(data_generation_by_energy_source,
     "et0_fao_evapotranspiration",
     "weather_code", "precipitation_probability"
   )
-  
+
   recent_weather <- weather_forecast(
     location = c(32.7157, -117.1611),   # San Diego
     start    = as.character(start_date),
@@ -66,7 +52,10 @@ make_prediction_renewables <- function(data_generation_by_energy_source,
     hourly   = HOURLY_VARS,
     timezone = "America/Los_Angeles"
   )
-  
+
+  # ============================================================
+  # 2. Clean weather, add engineered features
+  # ============================================================
   recent_weather_clean <- recent_weather %>%
     rename_with(~ str_remove(.x, "^hourly_"), starts_with("hourly_")) %>%
     rename(period_utc = datetime) %>%
@@ -82,29 +71,66 @@ make_prediction_renewables <- function(data_generation_by_energy_source,
       wdir80_cos = cos(2 * pi * wind_direction_80m / 360),
       wind_cubed_80m = wind_speed_80m^3
     )
-  
- 
+
+  # ============================================================
+  # 3. Clean generation, filter renewables + respondent
+  # ============================================================
   gen_recent <- data_generation_by_energy_source %>%
     filter(respondent == target_respondent,
            fueltype %in% RENEWABLE_FUELS) %>%
     rename(generation = value) %>%
     mutate(period_utc = ymd_hm(paste0(period, ":00"), tz = "UTC"))
-  
-  
-  models <- list()
-  for (fuel in names(FEATURES)) {
-    mpath <- file.path(model_dir, paste0("xgb_", fuel, ".model"))
-    if (file.exists(mpath)) {
-      models[[fuel]] <- xgb.load(mpath)
-    }
+
+  # ============================================================
+  # 4. [MODIFICADO] Descubrir fuels disponibles y cargar modelos + features
+  # ============================================================
+  # Ya no se itera sobre names(FEATURES). Se descubren los fuels a partir
+  # de los archivos .model que existan en model_dir, y se lee el .rds de
+  # features correspondiente para garantizar el orden exacto del entrenamiento.
+  available_fuels <- list.files(model_dir, pattern = "^xgb_\\w+\\.model$") %>%
+    str_remove("^xgb_") %>%
+    str_remove("\\.model$")
+
+  if (length(available_fuels) == 0) {
+    stop("No models found in ", model_dir)
   }
-  if (length(models) == 0) stop("No models found in ", model_dir)
-  
-  
+
+  models   <- list()
+  feat_map <- list()
+
+  for (fuel in available_fuels) {
+    mpath <- file.path(model_dir, paste0("xgb_", fuel, ".model"))
+    fpath <- file.path(model_dir, paste0("xgb_", fuel, "_features.rds"))
+
+    if (!file.exists(fpath)) {
+      warning(sprintf("Falta %s — se omite %s", fpath, fuel))
+      next
+    }
+
+    models[[fuel]]   <- xgb.load(mpath)
+    feat_map[[fuel]] <- readRDS(fpath)
+  }
+
+  if (length(models) == 0) {
+    stop("No models with matching _features.rds found in ", model_dir)
+  }
+
+  # ============================================================
+  # 5. [MODIFICADO] Predict on the full weather frame
+  # ============================================================
+  # Se usa feat_map[[fuel]] en vez de FEATURES[[fuel]]. El orden de columnas
+  # queda garantizado por el .rds del entrenamiento. Además, se verifica
+  # explícitamente que no falten columnas antes de predecir.
   preds_list <- purrr::map_dfr(names(models), function(fuel) {
-    feat <- intersect(FEATURES[[fuel]], names(recent_weather_clean))
-    if (length(feat) == 0) return(NULL)
-    
+    feat <- feat_map[[fuel]]
+
+    missing <- setdiff(feat, names(recent_weather_clean))
+    if (length(missing) > 0) {
+      warning(sprintf("[%s] faltan columnas: %s",
+                      fuel, paste(missing, collapse = ", ")))
+      return(NULL)
+    }
+
     X <- as.matrix(recent_weather_clean[, feat, drop = FALSE])
     tibble(
       period_utc = recent_weather_clean$period_utc,
@@ -112,16 +138,20 @@ make_prediction_renewables <- function(data_generation_by_energy_source,
       prediction = pmax(predict(models[[fuel]], X), 0)
     )
   })
-  
-  
+
+  # ============================================================
+  # 6. Join actuals where available
+  # ============================================================
   combined <- preds_list %>%
     left_join(
       gen_recent %>% select(period_utc, fueltype, generation),
       by = c("period_utc", "fueltype")
     ) %>%
     arrange(fueltype, period_utc)
-  
-  
+
+  # ============================================================
+  # 7. Plot
+  # ============================================================
   plot_df <- combined %>%
     pivot_longer(
       cols = c(generation, prediction),
@@ -135,8 +165,9 @@ make_prediction_renewables <- function(data_generation_by_energy_source,
                           generation = "Actual",
                           prediction = "Predicted")
     )
-  
+
   now_pt <- with_tz(Sys.time(), "America/Los_Angeles")
+
   p <- ggplot(plot_df, aes(x = period_pt, y = value,
                            color = series, linetype = series)) +
     geom_line(linewidth = 0.7, na.rm = TRUE) +
@@ -150,9 +181,7 @@ make_prediction_renewables <- function(data_generation_by_energy_source,
     scale_x_datetime(
       date_breaks = "12 hours",
       labels = function(x) {
-        paste0(
-          format(x, "%H", tz = "America/Los_Angeles")
-        )
+        format(x, "%H", tz = "America/Los_Angeles")
       }
     ) +
     labs(
@@ -173,6 +202,6 @@ make_prediction_renewables <- function(data_generation_by_energy_source,
       plot.subtitle     = element_text(size = 9),
       plot.margin       = margin(8, 8, 8, 8)
     )
-  
+
   return(p)
 }

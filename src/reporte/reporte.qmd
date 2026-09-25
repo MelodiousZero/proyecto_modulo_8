@@ -113,6 +113,9 @@ df <- datos %>%
   na.omit()
 ```
 
+\pagebreak
+
+
 **Predicción de la generación de energía eléctrica por medio de energías renovables**
 
 Para crear nuestro dataset lo que hicimos fue descargar la información de la EIA para la generación dividida por tipo de combustible por hora para un periodo extenso de 4 años aproximadamente. Después, usamos la API de Open-Meteo para descargar la información metereológica de San Diego en el mismo periodo. Ambos periodos fueron por hora entonces logramos estandarizarlos en UTC y después hacerles 
@@ -168,6 +171,10 @@ features <- list(
 
 Cada modelo tendría así las features que arriba se presentan. Y se guardan en el repositorio como modelos individuales.
 
+\pagebreak
+
+
+
 # Modelos
 
 **Predicción de la demanda de electricidad**
@@ -178,14 +185,30 @@ Dado que la demanda para toda la zona contigua de Estados Unidos , conocida como
 ![XGBoost: forecast vs real (2 semanas de test)](figures/xgb_test_2weeks.pdf){#fig-xgb}
 
 
+```{r}
+#| echo: false
+#| message: false
 
-Este fue el desempeño del entrenamiento ML para calcular la demanda eléctrica.
+metrics <- readr::read_csv(
+  "demand_metrics.csv",
+  show_col_types = FALSE
+)
+
+knitr::kable(
+  metrics[,1:10],
+  caption = "Métricas del modelo de predicción de demanda",
+  digits  = 3,
+  format  = "html"
+)
+```
+
+
+Este fue el desempeño del entrenamiento ML para calcular la demanda eléctrica. Como podemos ver, los resultados son buenos. La demanda es algo predecible porque sigue un patrón ciclico respecto a las horas en las que hay más actividad humana. 
 
 
 **Predicción de la generación de energía eléctrica por medio de energías renovables**
 
-De igual manera, usamos XGBoost para predecir la generación eléctrica por tipo de energía renovable. Hicimos un modelo por energía renovable para no tener un modelo "every size fits all". Por lo que tenemos 4 modelos:
-
+De igual manera, usamos XGBoost para predecir la generación eléctrica por tipo de energía renovable. Hicimos un modelo por energía renovable para no saturar toda la información en un solo modelo. Por lo que tenemos los siguientes:
 
 -   `xgb_GEO.model`
 -   `xgb_SUN.model`
@@ -193,6 +216,28 @@ De igual manera, usamos XGBoost para predecir la generación eléctrica por tipo
 -   `xgb_WIND.model`
 
 Cada uno tiene sus features que sacamos de Open-Meteo, por ejemplo para el de generación por medio de energía solar usamos cosas que fueran relevantes como lo son si el día es soleado o nublado, etc. Lo mismo para el resto de modelos, para el de WIND la velocidad del viento. Etc.
+
+```{r}
+#| echo: false
+#| message: false
+
+metrics <- readr::read_csv(
+  "renewables_metrics.csv",
+  show_col_types = FALSE
+)
+
+knitr::kable(
+  metrics[,1:8],
+  caption = "Métricas de modelos de generación renovable",
+  digits  = 3,
+  format  = "html"
+)
+```
+
+En este caso, los resultados fueron bastante pobres. Solo el de energía solar y el de energía hidrológica tuvieron resultados rescatables. Sospechamos que esto es debido a que no incluimos más información de Open Meteo. Dado que carecemos del conocimiento necesario respecto a energías renovables, no sabíamos que columnas elegir.
+
+Cosas como la dirección del viento y la temperatura estaban separadas por altura, como no nos fue posible sobre cargar la API de Open-Meteo con todas las columnas, tuvimos que elegirlas en cierta manera. Quizás, no elegimos la altura del viento adecuada o la medición de temperatura a cierta altura de forma adecuada. Cosas como esto pudieron influir en el desempeño de los modelos.
+
 
 # Principales resultados
 

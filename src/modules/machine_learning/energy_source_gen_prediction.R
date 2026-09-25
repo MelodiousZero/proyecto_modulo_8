@@ -86,9 +86,19 @@ train_one <- function(fuel) {
   cat(sprintf("%s | n_train=%d n_test=%d | RMSE=%.1f  MAE=%.1f  R²=%.3f  MAPE=%.1f%%\n",
               fuel, nrow(train), nrow(test), rmse, mae, r2, mape))
   
-  list(fuel = fuel, model = model, features = feat,
-       test = test %>% mutate(pred = pred),
-       metrics = c(rmse = rmse, mae = mae, r2 = r2, mape = mape))
+
+  list(
+    fuel       = fuel,
+    model      = model,
+    features   = feat,
+    test       = test %>% mutate(pred = pred),
+    metrics    = c(rmse = rmse, mae = mae, r2 = r2, mape = mape),
+    n_train    = nrow(train),                     
+    n_test     = nrow(test),                       
+    train_end  = max(train$period_utc),            
+    test_start = min(test$period_utc),             
+    test_end   = max(test$period_utc)              
+  )
 }
 
 results <- lapply(c("SUN", "SNB", "WND", "WAT", "GEO"), train_one)
@@ -105,7 +115,36 @@ preds <- bind_rows(lapply(results, function(r) r$test))
 write_csv(preds, "src/modules/machine_learning/ml_data/predictions.csv")
 
 dir.create("src/modules/machine_learning/models", showWarnings = FALSE, recursive = TRUE)
+
+
 for (fuel in names(results)) {
-  xgb.save(results[[fuel]]$model,
-           paste0("src/modules/machine_learning/models/xgb_", fuel, ".model"))
+  r <- results[[fuel]]
+  
+  xgb.save(
+    r$model,
+    paste0("src/modules/machine_learning/models/xgb_", fuel, ".model")
+  )
+  
+  saveRDS(
+    r$features,
+    paste0("src/modules/machine_learning/models/xgb_", fuel, "_features.rds")
+  )
+  
+  saveRDS(
+    list(
+      fuel       = r$fuel,
+      r2         = r$metrics[["r2"]],
+      rmse       = r$metrics[["rmse"]],
+      mae        = r$metrics[["mae"]],
+      mape       = r$metrics[["mape"]],
+      n_train    = r$n_train,
+      n_test     = r$n_test,
+      features   = r$features,
+      train_end  = r$train_end,
+      test_start = r$test_start,
+      test_end   = r$test_end,
+      trained_at = Sys.time()
+    ),
+    paste0("src/modules/machine_learning/models/xgb_", fuel, "_metrics.rds")
+  )
 }

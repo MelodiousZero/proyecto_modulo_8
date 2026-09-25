@@ -99,6 +99,9 @@ pred_xgb <- predict(xgb, X_test)
 
 mae_xgb  <- mean(abs(pred_xgb - y_test))
 rmse_xgb <- sqrt(mean((pred_xgb - y_test)^2))
+r2_xgb   <- 1 - sum((pred_xgb - y_test)^2) / sum((y_test - mean(y_test))^2)
+mape_xgb <- mean(abs((pred_xgb - y_test) / pmax(y_test, 1))) * 100
+
 
 cat("\n--- XGBoost ---\n")
 cat("MAE :", round(mae_xgb), "MW\n")
@@ -119,7 +122,7 @@ p <- test %>%
        y = "MW", x = NULL, color = NULL) +
   theme_minimal()
 
-ggsave("src/figures/xgb_test_2weeks.pdf", p,
+ggsave("src/reporte/figures/xgb_test_2weeks.pdf", p,
        width = 7, height = 3.2, units = "in", device = cairo_pdf)
 
 test %>%
@@ -147,14 +150,23 @@ xgb.plot.importance(imp, top_n = 10,
 
 xgb.save(xgb, "src/modules/machine_learning/models/xgb_demand_us48.model")
 saveRDS(features, "src/modules/machine_learning/models/features.rds")
+
 saveRDS(
   list(
-    mae_train = mae_xgb,
-    trained_at = Sys.time(),
-    train_end = max(train$period)
+    fuel       = "US48_DEMAND",                 
+    r2         = r2_xgb,                        
+    rmse       = rmse_xgb,                      
+    mae        = mae_xgb,                       
+    mape       = mape_xgb,                      
+    n_train    = nrow(train),                   
+    n_test     = nrow(test),                    
+    features   = features,                      
+    train_end  = max(train$period),
+    test_start = min(test$period),              
+    test_end   = max(test$period),              
+    trained_at = Sys.time()
   ),
-  "src/modules/machine_learning/models/metadata.rds"
+  "src/modules/machine_learning/models/demand_metrics.rds"  # [MODIFICADO] antes: metadata.rds
 )
-
 
 

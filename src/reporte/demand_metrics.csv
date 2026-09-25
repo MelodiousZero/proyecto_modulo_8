@@ -1,0 +1,2 @@
+demand,r2,rmse,mae,mape,n_train,n_test,train_end,test_start,test_end,trained_at
+US48_DEMAND,0.9916,7647.57,5712.97,1.12,39820,9955,2025-07-25T03:00:00Z,2025-07-25T04:00:00Z,2026-09-12T22:00:00Z,2026-09-25T02:54:52Z
