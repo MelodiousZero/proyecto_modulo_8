@@ -6,8 +6,15 @@ library(dplyr)
 
 
 make_incidents_map <- function(df){
-    
-df <- df %>%
+  
+  affected <- df %>%
+    mutate(metersaffected = suppressWarnings(as.numeric(metersaffected))) %>%
+    filter(!is.na(metersaffected), metersaffected > 0) %>%
+    distinct(state, county)
+  
+  n_affected <- nrow(affected)  
+
+  df <- df %>%
   mutate(
     metersaffected = as.numeric(metersaffected),
     centroid.lon   = as.numeric(centroid.lon),
@@ -33,7 +40,7 @@ ggplot() +
               xlim = c(-125, -66),
               ylim = c(24, 50)) +
   labs(title = "Apagones",
-       subtitle = paste0("Condados afectados: ", nrow(df)),
+       subtitle = paste0("Condados afectados: ", n_affected),
        x = NULL, y = NULL) +
   theme_minimal(base_size = 12) +
   theme(panel.grid = element_blank(),
