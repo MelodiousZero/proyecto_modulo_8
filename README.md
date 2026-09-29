@@ -44,3 +44,9 @@ Esto debería de instalar las paqueterías necesarias para correr todo el proyec
 
 > [!WARNING] 
 > No he probado el uso de `renv`, por lo que no sé que tan efectivo sea. Pero he creado el `renv.lock` y empujado la carpeta `renv` que tiene el script necesario para descargar las paqueterías.
+
+> [!NOTE] 
+> El uso de `renv` no implica ambientes virtuales, por lo que para correr este proyecto tendrás que usar la versión de R que yo usé, la cual es `"Version": "4.5.3"`
+
+
+
