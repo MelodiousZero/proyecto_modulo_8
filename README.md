@@ -5,7 +5,7 @@
 ## Introducción
 
 Este es el repositorio del proyecto final del módulo 8 del Diplomado Introducción Analítica a la Ciencia de Datos. 
-Es un dashboard basado en flexdashboard programado en .R en su mayoría. Con el reporte escrito en .qmd. 
+Es un dashboard basado en flexdashboard programado en `.R` en su mayoría. Con el reporte escrito en `.qmd.` 
 
 ## Entregables
 
