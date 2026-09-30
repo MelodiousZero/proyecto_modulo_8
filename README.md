@@ -30,7 +30,7 @@ Los integrantes del equipo de este repositorio son los siguientes:
 
 ### Carga Automática de datos
 
-Cada día a las 3:00AM se ejecuta una acción de GitHub que carga la data usando `load.R`, después se ejecuta otra acción de GitHub para renderizar el dashboard y subirlo al repositorio, actualizando así la vista del mismo. 
+Cada día a las 5:00AM se ejecuta una acción de GitHub que carga la data usando `load.R`, después se ejecuta otra acción de GitHub para renderizar el dashboard y subirlo al repositorio, actualizando así la vista del mismo. 
 De igual manera se puede cargar de forma manual con la acción  "Update Data & Deploy Dashboard" 
 
 ### Reproducción
