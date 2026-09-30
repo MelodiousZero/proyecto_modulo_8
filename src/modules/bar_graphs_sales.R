@@ -50,7 +50,7 @@ make_sector_decomposition_bars <- function(sales_to_customers_monthly,
     type = "bar",
     hovertemplate = paste0(
       "<b>%{x}</b><br>",
-      "%{fullData.name}: $%{y:,.1f} M<extra></extra>"
+      "%{fullData.name}: $%{y:,.3f} M<extra></extra>"
     )
   ) %>%
     layout(
