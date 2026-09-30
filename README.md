@@ -9,8 +9,8 @@ Es un dashboard basado en flexdashboard programado en .R en su mayoría. Con el 
 
 ## Entregables
 
-- Dashboard [entre a la liga](https://melodiouszero.github.io/proyecto_modulo_8)
-- Reporte [entre a la liga](https://github.com/MelodiousZero/proyecto_modulo_8/blob/main/src/reporte/reporte.pdf)
+-  [Dashboard](https://melodiouszero.github.io/proyecto_modulo_8)
+-  [Reporte](https://github.com/MelodiousZero/proyecto_modulo_8/blob/main/src/reporte/reporte.pdf)
 
 ## Integrantes de equipo
 
