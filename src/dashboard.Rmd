@@ -191,54 +191,50 @@ make_usmap_sales(sales_monthly)
 
 
 Apagones {data-orientation=rows}
-===============================
+===================================
 
-
-Row {data-height=5}
------------------------------------------------------------------------
-
-###
+Row
+-----------------------------------
+### Incidentes {data-width=50}
 
 ```{r}
 make_value_box_incidents(indicents_df)
 ```
 
-
-###
+### Estado con más problemas {data-width=50}
 
 ```{r}
 make_state_with_most_problems(indicents_df)
 ```
 
 
-Row {data-height=75}
------------------------------------------------------------------------
 
-### 
-```{r}
-make_incidents_map(indicents_df)
-```
+Column {data-width=70}
+-----------------------------------
 
-
-Row {data-height=20}
-----------------------------------------------------------------------
-
-
-
-###
+### Estados
 
 ```{r}
 make_status_bar_graph(indicents_df)
 ```
 
-###
+### Causas
 
 ```{r}
 make_causes_bar_graph(indicents_df)
 ```
 
+Column {data-width=30}
+-----------------------------------
 
-Renovables {}
+### Mapa
+
+```{r}
+make_incidents_map(indicents_df)
+```
+
+
+Renovables 
 ===============================
 
 
