@@ -162,7 +162,7 @@ make_us_map <- function(data,
   zmin <- min(state_values_all$value, na.rm = TRUE)
   zmax <- max(state_values_all$value, na.rm = TRUE)
   
-  colorscale <- list(c(0, "blue"), c(0.5, "white"), c(1, "red"))
+  colorscale <- list(c(0, "blue"), c(0.5, "yellow"), c(1, "red"))
   
   p <- plot_ly(
     data         = state_values_all,
