@@ -97,6 +97,7 @@ La información sobre los apagones se obtuvo mediante la API de ODIN, extrayendo
 El análisis de demanda, ventas, capacidad y apagones tiene un alcance nacional, con el objetivo de mantener una visualización manejable y concentrar el dashboard en patrones generales del sistema eléctrico de Estados Unidos.
 
 Para el análisis de generación renovable se utiliza una escala regional. La generación corresponde al área de balance de California (CISO), mientras que las variables meteorológicas corresponden a San Diego, California.
+Es un buen punto de referencia ya que California, se reconoce por su alto consumo de energía (que podemos notar en el dashboard en la sección de ventas) 
 
 En cuanto al periodo, se consideró información desde enero de 2021 hasta septiembre de 2026.
 
@@ -219,7 +220,7 @@ Las variables utilizadas se seleccionaron de acuerdo con la naturaleza de cada f
 | Hidráulica | Precipitación, temperatura, nieve, evapotranspiración y variables temporales. |
 | Geotérmica | Temperatura y variables temporales. |
 
-Asimismo, se contempló una reestructuración en el nivel de desagregación de la información, agrupando los dsitritos y regiones electricas a nivel estatal.
+Asimismo, se contempló una reestructuración en el nivel de desagregación de la información, agrupando los distritos y regiones electricas a nivel estatal.
 
 # Modelos
 
@@ -289,9 +290,10 @@ La demanda eléctrica en Estados Unidos guarda una estrecha relación con la act
 
 # Limitaciones
 
-- La información de apagones proveniente de ODIN presenta cobertura y detalle limitados en algunas variables, por lo que su utilidad para construir modelos predictivos es restringida.
+- La información de apagones proveniente de ODIN presenta cobertura y detalle limitados en algunas variables, por lo que su utilidad para construir modelos predictivos es restringida además de que podríamos sobre ajustar los modelos y no se podrían usar para estimar.
 - La información de EIA es principalmente descriptiva para varias de las variables utilizadas. Para desarrollar modelos más completos sería necesario incorporar fuentes adicionales de información.
 - Los modelos renovables utilizan un conjunto limitado de variables meteorológicas. La selección de variables y alturas de medición se realizó considerando las restricciones prácticas de consulta a la API y el conocimiento disponible sobre cada tecnología.
+
 
 # Posibles extensiones
 
