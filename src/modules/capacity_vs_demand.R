@@ -5,7 +5,13 @@ library(ggplot2)
 
 capacity_vs_demand <- function(state_generation_capacity,
                                state_demand_df,
+                               dayly_hourly_df,
                                max_pct = 150) {
+  
+  sub <- dayly_hourly_df[dayly_hourly_df$type == "D" & dayly_hourly_df$respondent == "US48", ]
+  sub <- sub[sub$period == max(sub$period), ]
+  demand_us <- sub$value
+  
   
   state_capacity <- state_generation_capacity %>%
     filter(
@@ -50,13 +56,13 @@ capacity_vs_demand <- function(state_generation_capacity,
   
   if (length(top_state) == 0) top_state <- "US"  
   
-  speedometer_grid(state_capacity, state_demand,
+  speedometer_grid(state_capacity, state_demand,demand_us,
                    states  = c(top_state, "US"),
                    max_pct = max_pct)
 }
 
 
-speedometer_grid <- function(state_capacity, state_demand,
+speedometer_grid <- function(state_capacity, state_demand,demand_us,
                              states = c("US"), max_pct = 150) {
   
   last_hour <- max(state_demand$hour, na.rm = TRUE)
@@ -71,7 +77,7 @@ speedometer_grid <- function(state_capacity, state_demand,
     mutate(stateId = as.character(stateId)) %>%
     filter(stateId != "US")
   
-  us_dem <- sum(demand_last$demand, na.rm = TRUE)
+  us_dem <- demand_us
   us_cap <- capacity_all %>%
     filter(stateId == "US") %>%
     summarise(capacity = sum(capability, na.rm = TRUE)) %>%

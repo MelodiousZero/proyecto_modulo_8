@@ -107,7 +107,7 @@ make_fuel_mix(data_generation_by_energy_source)
 
 
 ```{r}
-capacity_vs_demand(state_generation_capacity,data)
+capacity_vs_demand(state_generation_capacity,data,daily_hour_demand)
 ```
 
 
